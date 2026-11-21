@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Kekekalan Energi Mekanik - PhysLab 10</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .status-badge {
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .status-lolos {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        .status-gagal {
+            background-color: #fefce8;
+            color: #ca8a04;
+            border: 1px solid #fef08a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi Atas -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">⚛️</span>
+                <h1>PhysLab <span>10</span></h1>
+            </div>
+            <nav>
+                <a href="index.html">Beranda</a>
+                <a href="parabola.html">Parabola</a>
+                <a href="pegas.html">Pegas</a>
+                <a href="bidang-miring.html">Bidang Miring</a>
+                <a href="bandul.html">Bandul</a>
+                <a href="energi.html" class="active">Energi</a>
+                <button id="theme-toggle" class="btn-theme">🌙 Mode Gelap</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Area Utama Simulasi -->
+    <main class="container">
+        <div style="margin-bottom: 1.5rem;">
+            <h2>5. Simulator Hukum Kekekalan Energi Mekanik</h2>
+            <p style="color: var(--text-secondary);">Amati perubahan Energi Potensial (EP) menjadi Energi Kinetik (EK) saat kereta meluncur di lintasan roller coaster licin.</p>
+        </div>
+
+        <div class="sim-layout">
+            
+            <!-- PANEL KIRI: Kontrol Variabel Pengguna -->
+            <aside class="control-panel">
+                <h3 style="margin-bottom: 1rem;">Variabel Lintasan</h3>
+
+                <!-- Input Tinggi Awal (h1) -->
+                <div class="control-group">
+                    <label>
+                        <span>Tinggi Bukit Awal (h₁)</span>
+                        <span id="val-h1" style="color: var(--accent);">15.0 m</span>
+                    </label>
+                    <input type="range" id="input-h1" min="5" max="25" step="1" value="15">
+                </div>
+
+                <!-- Input Tinggi Bukit Kedua (h2) -->
+                <div class="control-group">
+                    <label>
+                        <span>Tinggi Bukit Kedua (h₂)</span>
+                        <span id="val-h2" style="color: var(--accent);">10.0 m</span>
+                    </label>
+                    <input type="range" id="input-h2" min="2" max="25" step="1" value="10">
+                </div>
+
+                <!-- Input Massa Kereta (m) -->
+                <div class="control-group">
+                    <label>
+                        <span>Massa Kereta (m)</span>
+                        <span id="val-m" style="color: var(--accent);">50 kg</span>
+                    </label>
+                    <input type="range" id="input-m" min="10" max="100" step="10" value="50">
+                </div>
+
+                <!-- Tombol Kontrol -->
+                <div class="btn-group">
+                    <button id="btn-play" class="btn-primary" style="flex: 2;">▶ Luncurkan Kereta</button>
+                    <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
+                </div>
+
+                <!-- Kotak Rumus -->
+                <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
+                    <strong>Rumus Kekekalan Energi:</strong><br>
+                    • Energi Potensial: <code>EP = m · g · h</code><br>
+                    • Energi Kinetik: <code>EK = ½ · m · v²</code><br>
+                    • Energi Mekanik: <code>EM = EP + EK</code><br>
+                    • Kecepatan: <code>v = √(2 · g · (h₁ - h))</code>
+                </div>
+            </aside>
+
+            <!-- PANEL KANAN: Kanvas Roller Coaster, Grafik Energi & Output -->
+            <section class="visual-panel">
+                <div id="status-box" class="status-badge status-lolos">
+                    Prediksi: Kereta Mampu Melewati Bukit Kedua (h₁ ≥ h₂)
+                </div>
+
+                <canvas id="energy-canvas" width="650" height="380"></canvas>
+
+                <!-- Kartu Output Real-Time -->
+                <div class="output-grid">
+                    <div class="output-item">
+                        <span>Energi Potensial (EP)</span>
+                        <strong id="out-ep" style="color: #2563eb;">7350 J</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Energi Kinetik (EK)</span>
+                        <strong id="out-ek" style="color: #16a34a;">0 J</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Total Energi Mekanik (EM)</span>
+                        <strong id="out-em" style="color: #ea580c;">7350 J</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Kecepatan Kereta (v)</span>
+                        <strong id="out-v">0.00 m/s</strong>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>PhysLab 10 • Modul Hukum Kekekalan Energi Mekanik (Usaha & Energi)</p>
+        </div>
+    </footer>
+
+    <!-- Menghubungkan ke file JavaScript khusus simulasi energi -->
+    <script src="energi.js"></script>
+</body>
+</html>
