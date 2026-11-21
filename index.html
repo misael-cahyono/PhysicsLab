@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhysLab 10 - Laboratorium Fisika Virtual</title>
+    <!-- Menghubungkan ke file desain CSS yang akan kita buat setelah ini -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Bagian Navigasi Atas (Navbar) -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">⚛️</span>
+                <h1>PhysLab <span>10</span></h1>
+            </div>
+            <nav>
+                <a href="index.html" class="active">Beranda</a>
+                <a href="parabola.html">Gerak Parabola</a>
+                <a href="pegas.html">Hukum Hooke</a>
+                <button id="theme-toggle" class="btn-theme" title="Ganti Tema Warna">🌙 Mode Gelap</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Bagian Utama (Hero & Daftar Modul) -->
+    <main class="container">
+        <section class="hero">
+            <h2>Eksperimen Fisika Interaktif Kelas 10</h2>
+            <p>Pelajari hukum-hukum fisika secara visual. Ubah variabel percobaan secara bebas, amati pergerakannya, dan dapatkan hasil perhitungan secara langsung—bahkan tanpa koneksi internet.</p>
+        </section>
+
+        <!-- Daftar Kartu Modul Praktikum -->
+        <section class="modules-grid">
+            
+            <!-- Kartu Modul 1: Gerak Parabola -->
+            <article class="card">
+                <div class="card-badge">Kinematika</div>
+                <h3>1. Simulator Gerak Parabola</h3>
+                <p>Amati lintasan proyektil berdasarkan sudut tembakan, kecepatan awal, dan percepatan gravitasi planet yang berbeda.</p>
+                
+                <div class="formula-box">
+                    <strong>Rumus Utama:</strong><br>
+                    <code>X_max = (v₀² · sin 2θ) / g</code><br>
+                    <code>Y_max = (v₀² · sin² θ) / 2g</code>
+                </div>
+
+                <a href="parabola.html" class="btn-primary">Mulai Eksperimen →</a>
+            </article>
+
+            <!-- Kartu Modul 2: Hukum Hooke -->
+            <article class="card">
+                <div class="card-badge">Elastisitas</div>
+                <h3>2. Lab Virtual Hukum Hooke</h3>
+                <p>Uji tingkat kekakuan pegas dengan berbagai massa beban, ukur pertambahan panjangnya, serta amati getaran harmoniknya.</p>
+                
+                <div class="formula-box">
+                    <strong>Rumus Utama:</strong><br>
+                    <code>F = k · Δx</code><br>
+                    <code>Ep = ½ · k · Δx²</code>
+                </div>
+
+                <a href="pegas.html" class="btn-primary">Mulai Eksperimen →</a>
+            </article>
+
+        </section>
+    </main>
+
+    <!-- Bagian Kaki Halaman (Footer) -->
+    <footer>
+        <div class="container">
+            <p>Dibuat untuk Pembelajaran Fisika SMA Kelas 10 • Berjalan 100% Offline</p>
+        </div>
+    </footer>
+
+    <!-- Script kecil khusus untuk tombol ganti tema (Terang/Gelap) -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                htmlElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️ Mode Terang';
+            } else {
+                htmlElement.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '🌙 Mode Gelap';
+            }
+        });
+    </script>
+
+</body>
+</html>
