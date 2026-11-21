@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhysLab 10 - Laboratorium Fisika Virtual</title>
-    <!-- Menghubungkan ke file desain CSS yang akan kita buat setelah ini -->
+    <title>PhysLab 10 - Laboratorium Fisika Virtual Lengkap</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,18 +17,21 @@
             </div>
             <nav>
                 <a href="index.html" class="active">Beranda</a>
-                <a href="parabola.html">Gerak Parabola</a>
-                <a href="pegas.html">Hukum Hooke</a>
+                <a href="parabola.html">Parabola</a>
+                <a href="pegas.html">Pegas</a>
+                <a href="bidang-miring.html">Bidang Miring</a>
+                <a href="bandul.html">Bandul</a>
+                <a href="energi.html">Energi</a>
                 <button id="theme-toggle" class="btn-theme" title="Ganti Tema Warna">🌙 Mode Gelap</button>
             </nav>
         </div>
     </header>
 
-    <!-- Bagian Utama (Hero & Daftar Modul) -->
+    <!-- Bagian Utama (Hero & Daftar 5 Modul) -->
     <main class="container">
         <section class="hero">
-            <h2>Eksperimen Fisika Interaktif Kelas 10</h2>
-            <p>Pelajari hukum-hukum fisika secara visual. Ubah variabel percobaan secara bebas, amati pergerakannya, dan dapatkan hasil perhitungan secara langsung—bahkan tanpa koneksi internet.</p>
+            <h2>Laboratorium Fisika Virtual SMA Kelas 10</h2>
+            <p>Pelajari 5 konsep utama fisika secara visual dan interaktif. Ubah variabel percobaan sesukamu, amati simulasinya secara langsung, dan catat hasil perhitungannya—100% tanpa koneksi internet.</p>
         </section>
 
         <!-- Daftar Kartu Modul Praktikum -->
@@ -37,32 +39,92 @@
             
             <!-- Kartu Modul 1: Gerak Parabola -->
             <article class="card">
-                <div class="card-badge">Kinematika</div>
-                <h3>1. Simulator Gerak Parabola</h3>
-                <p>Amati lintasan proyektil berdasarkan sudut tembakan, kecepatan awal, dan percepatan gravitasi planet yang berbeda.</p>
-                
-                <div class="formula-box">
-                    <strong>Rumus Utama:</strong><br>
-                    <code>X_max = (v₀² · sin 2θ) / g</code><br>
-                    <code>Y_max = (v₀² · sin² θ) / 2g</code>
+                <div>
+                    <div class="card-badge">Kinematika 2D</div>
+                    <h3>1. Simulator Gerak Parabola</h3>
+                    <p>Amati lintasan proyektil berdasarkan sudut tembakan, kecepatan awal, dan percepatan gravitasi planet yang berbeda.</p>
                 </div>
-
-                <a href="parabola.html" class="btn-primary">Mulai Eksperimen →</a>
+                
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>X_max = (v₀² · sin 2θ) / g</code><br>
+                        <code>Y_max = (v₀² · sin² θ) / 2g</code>
+                    </div>
+                    <a href="parabola.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
             </article>
 
             <!-- Kartu Modul 2: Hukum Hooke -->
             <article class="card">
-                <div class="card-badge">Elastisitas</div>
-                <h3>2. Lab Virtual Hukum Hooke</h3>
-                <p>Uji tingkat kekakuan pegas dengan berbagai massa beban, ukur pertambahan panjangnya, serta amati getaran harmoniknya.</p>
-                
-                <div class="formula-box">
-                    <strong>Rumus Utama:</strong><br>
-                    <code>F = k · Δx</code><br>
-                    <code>Ep = ½ · k · Δx²</code>
+                <div>
+                    <div class="card-badge">Elastisitas</div>
+                    <h3>2. Lab Virtual Hukum Hooke</h3>
+                    <p>Uji tingkat kekakuan pegas dengan berbagai massa beban, ukur pertambahan panjangnya, serta amati getaran harmoniknya.</p>
                 </div>
+                
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>F = k · Δx</code><br>
+                        <code>Ep = ½ · k · Δx²</code>
+                    </div>
+                    <a href="pegas.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
+            </article>
 
-                <a href="pegas.html" class="btn-primary">Mulai Eksperimen →</a>
+            <!-- Kartu Modul 3: Bidang Miring & Gaya Gesek -->
+            <article class="card">
+                <div>
+                    <div class="card-badge">Dinamika (Hukum Newton)</div>
+                    <h3>3. Bidang Miring & Gaya Gesek</h3>
+                    <p>Uji kapan balok mulai meluncur di atas papan miring dengan mengatur sudut kemiringan, massa benda, dan kekasaran permukaan.</p>
+                </div>
+                
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>f_gesek = μ · N</code><br>
+                        <code>a = g · (sin θ - μ · cos θ)</code>
+                    </div>
+                    <a href="bidang-miring.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
+            </article>
+
+            <!-- Kartu Modul 4: Ayunan Bandul Sederhana -->
+            <article class="card">
+                <div>
+                    <div class="card-badge">Getaran Harmonik</div>
+                    <h3>4. Ayunan Bandul Sederhana</h3>
+                    <p>Buktikan pengaruh panjang tali dan gravitasi planet terhadap kecepatan ayunan bandul lengkap dengan stopwatch praktikum.</p>
+                </div>
+                
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>T = 2π · √(L / g)</code><br>
+                        <code>f = 1 / T</code>
+                    </div>
+                    <a href="bandul.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
+            </article>
+
+            <!-- Kartu Modul 5: Kekekalan Energi Mekanik -->
+            <article class="card">
+                <div>
+                    <div class="card-badge">Usaha & Energi</div>
+                    <h3>5. Kekekalan Energi Mekanik</h3>
+                    <p>Amati perubahan Energi Potensial menjadi Energi Kinetik saat kereta meluncur melewati bukit dan lembah lintasan.</p>
+                </div>
+                
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>EM = EP + EK</code><br>
+                        <code>m·g·h + ½·m·v² = Konstan</code>
+                    </div>
+                    <a href="energi.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
             </article>
 
         </section>
@@ -71,11 +133,11 @@
     <!-- Bagian Kaki Halaman (Footer) -->
     <footer>
         <div class="container">
-            <p>Dibuat untuk Pembelajaran Fisika SMA Kelas 10 • Berjalan 100% Offline</p>
+            <p>PhysLab 10 • Portal Praktikum Fisika SMA Kelas 10 • Berjalan 100% Offline</p>
         </div>
     </footer>
 
-    <!-- Script kecil khusus untuk tombol ganti tema (Terang/Gelap) -->
+    <!-- Script tombol ganti tema -->
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
