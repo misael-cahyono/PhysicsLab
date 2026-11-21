@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Bidang Miring & Gaya Gesek - PhysLab 10</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .status-badge {
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .status-diam {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .status-gerak {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi Atas -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">⚛️</span>
+                <h1>PhysLab <span>10</span></h1>
+            </div>
+            <nav>
+                <a href="index.html">Beranda</a>
+                <a href="parabola.html">Parabola</a>
+                <a href="pegas.html">Pegas</a>
+                <a href="bidang-miring.html" class="active">Bidang Miring</a>
+                <a href="bandul.html">Bandul</a>
+                <a href="energi.html">Energi</a>
+                <button id="theme-toggle" class="btn-theme">🌙 Mode Gelap</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Area Utama Simulasi -->
+    <main class="container">
+        <div style="margin-bottom: 1.5rem;">
+            <h2>3. Simulator Bidang Miring & Gaya Gesek (Hukum Newton)</h2>
+            <p style="color: var(--text-secondary);">Ubah sudut kemiringan bidang dan tingkat kekasaran permukaan untuk melihat kapan gaya gravitasi mampu mengalahkan gaya gesek.</p>
+        </div>
+
+        <div class="sim-layout">
+            
+            <!-- PANEL KIRI: Kontrol Variabel Pengguna -->
+            <aside class="control-panel">
+                <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
+
+                <!-- Input Sudut Kemiringan -->
+                <div class="control-group">
+                    <label>
+                        <span>Sudut Kemiringan (θ)</span>
+                        <span id="val-angle" style="color: var(--accent);">30°</span>
+                    </label>
+                    <input type="range" id="input-angle" min="5" max="60" step="1" value="30">
+                </div>
+
+                <!-- Input Massa Balok -->
+                <div class="control-group">
+                    <label>
+                        <span>Massa Balok (m)</span>
+                        <span id="val-m" style="color: var(--accent);">2.0 kg</span>
+                    </label>
+                    <input type="range" id="input-m" min="1" max="10" step="0.5" value="2">
+                </div>
+
+                <!-- Input Koefisien Gesek -->
+                <div class="control-group">
+                    <label>
+                        <span>Koefisien Gesek (μ)</span>
+                        <span id="val-mu" style="color: var(--accent);">0.20</span>
+                    </label>
+                    <input type="range" id="input-mu" min="0" max="0.8" step="0.05" value="0.2">
+                </div>
+
+                <!-- Preset Jenis Permukaan -->
+                <div class="control-group">
+                    <label for="preset-surface">Contoh Permukaan Cepat</label>
+                    <select id="preset-surface">
+                        <option value="custom" selected>Atur Manual (Slider)</option>
+                        <option value="0">Es Licin Sempurna (μ = 0.00)</option>
+                        <option value="0.2">Kayu di Atas Kayu (μ = 0.20)</option>
+                        <option value="0.5">Karet di Atas Beton (μ = 0.50)</option>
+                        <option value="0.75">Permukaan Sangat Kasar (μ = 0.75)</option>
+                    </select>
+                </div>
+
+                <!-- Opsi Tampilkan Vektor Gaya -->
+                <div class="control-group" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="check-vectors" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="check-vectors" style="margin: 0; cursor: pointer;">Tampilkan Panah Vektor Gaya</label>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="btn-group">
+                    <button id="btn-start" class="btn-primary" style="flex: 2;">▶ Lepaskan Balok</button>
+                    <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
+                </div>
+
+                <!-- Kotak Rumus -->
+                <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
+                    <strong>Rumus Bidang Miring:</strong><br>
+                    • Gaya Sejajar Bidang: <code>w·sin θ</code><br>
+                    • Gaya Normal: <code>N = m·g·cos θ</code><br>
+                    • Gaya Gesek Maks: <code>f_gesek = μ · N</code><br>
+                    • Percepatan: <code>a = g·(sin θ - μ·cos θ)</code>
+                </div>
+            </aside>
+
+            <!-- PANEL KANAN: Visualisasi Kanvas & Output -->
+            <section class="visual-panel">
+                <!-- Indikator Status Benda -->
+                <div id="status-box" class="status-badge status-gerak">
+                    Status: Siap Diluncurkan (w·sin θ > f_gesek)
+                </div>
+
+                <canvas id="incline-canvas" width="650" height="380"></canvas>
+
+                <!-- Kartu Output Real-Time -->
+                <div class="output-grid">
+                    <div class="output-item">
+                        <span>Percepatan Balok (a)</span>
+                        <strong id="out-a">3.20 m/s²</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Gaya Gesek (f_gesek)</span>
+                        <strong id="out-fg">3.39 N</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Gaya Normal (N)</span>
+                        <strong id="out-n">16.97 N</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Kecepatan Akhir (v)</span>
+                        <strong id="out-v">0.00 m/s</strong>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>PhysLab 10 • Modul Bidang Miring & Gaya Gesek (Hukum Newton)</p>
+        </div>
+    </footer>
+
+    <!-- Menghubungkan ke file JavaScript khusus simulasi bidang miring -->
+    <script src="bidang-miring.js"></script>
+</body>
+</html>
