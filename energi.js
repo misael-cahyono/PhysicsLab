@@ -164,7 +164,7 @@ function drawScene(currentH, ep, ek, em) {
     const yH1 = groundY - h1 * scaleY;
     const yH2 = groundY - h2 * scaleY;
 
-    ctx.setLineDash();
+    ctx.setLineDash([5, 5]);
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 1;
 
