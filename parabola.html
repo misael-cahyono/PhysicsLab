@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Gerak Parabola - PhysLab 10</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya tambahan khusus tabel riwayat percobaan */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.6rem;
+            text-align: center;
+        }
+        .history-table th {
+            background-color: var(--formula-bg);
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi Atas -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">⚛️</span>
+                <h1>PhysLab <span>10</span></h1>
+            </div>
+            <nav>
+                <a href="index.html">Beranda</a>
+                <a href="parabola.html" class="active">Gerak Parabola</a>
+                <a href="pegas.html">Hukum Hooke</a>
+                <button id="theme-toggle" class="btn-theme">🌙 Mode Gelap</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Area Utama Simulasi -->
+    <main class="container">
+        <div style="margin-bottom: 1.5rem;">
+            <h2>1. Simulator Gerak Parabola (Kinematika 2D)</h2>
+            <p style="color: var(--text-secondary);">Atur sudut elevasi dan kecepatan awal proyektil untuk mengamati lintasan melengkung, tinggi puncak, dan jarak terjauhnya.</p>
+        </div>
+
+        <div class="sim-layout">
+            
+            <!-- PANEL KIRI: Kontrol Variabel Pengguna -->
+            <aside class="control-panel">
+                <h3 style="margin-bottom: 1rem;">Variabel Tembakan</h3>
+
+                <!-- Input Sudut Elevasi -->
+                <div class="control-group">
+                    <label>
+                        <span>Sudut Elevasi (θ)</span>
+                        <span id="val-angle" style="color: var(--accent);">45°</span>
+                    </label>
+                    <input type="range" id="input-angle" min="0" max="90" step="1" value="45">
+                </div>
+
+                <!-- Input Kecepatan Awal -->
+                <div class="control-group">
+                    <label>
+                        <span>Kecepatan Awal (v₀)</span>
+                        <span id="val-v0" style="color: var(--accent);">25 m/s</span>
+                    </label>
+                    <input type="range" id="input-v0" min="5" max="40" step="1" value="25">
+                </div>
+
+                <!-- Pilihan Gravitasi -->
+                <div class="control-group">
+                    <label for="input-g">Percepatan Gravitasi (g)</label>
+                    <select id="input-g">
+                        <option value="9.8" selected>Bumi (9,8 m/s²)</option>
+                        <option value="1.6">Bulan (1,6 m/s²)</option>
+                        <option value="3.7">Mars (3,7 m/s²)</option>
+                        <option value="10">Pembulatan Sekolah (10 m/s²)</option>
+                    </select>
+                </div>
+
+                <!-- Tombol Utama: Tembak & Jeda -->
+                <div class="btn-group">
+                    <button id="btn-fire" class="btn-primary" style="flex: 2;">🚀 Tembak</button>
+                    <button id="btn-pause" class="btn-secondary" style="flex: 1;">Jeda</button>
+                </div>
+
+                <!-- Tombol Tambahan: Bersihkan Jejak & Rumus -->
+                <div class="btn-group">
+                    <button id="btn-clear" class="btn-secondary">Hapus Jejak</button>
+                    <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
+                </div>
+
+                <!-- Kotak Rumus (Tersembunyi secara default) -->
+                <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
+                    <strong>Rumus Gerak Parabola:</strong><br>
+                    • Posisi X: <code>x = v₀ · cos(θ) · t</code><br>
+                    • Posisi Y: <code>y = v₀ · sin(θ) · t - ½gt²</code><br>
+                    • Tinggi Maks: <code>Y_max = (v₀² · sin²θ) / 2g</code><br>
+                    • Jarak Terjauh: <code>X_max = (v₀² · sin 2θ) / g</code>
+                </div>
+            </aside>
+
+            <!-- PANEL KANAN: Kanvas Lintasan, Output & Tabel Data -->
+            <section class="visual-panel">
+                <canvas id="parabola-canvas" width="650" height="380"></canvas>
+
+                <!-- Kartu Output Real-Time -->
+                <div class="output-grid">
+                    <div class="output-item">
+                        <span>Waktu di Udara (t)</span>
+                        <strong id="out-t">0.00 s</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Posisi Saat Ini (x, y)</span>
+                        <strong id="out-pos">0.0m, 0.0m</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Tinggi Maksimum (Y_max)</span>
+                        <strong id="out-ymax">0.00 m</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Jarak Terjauh (X_max)</span>
+                        <strong id="out-xmax">0.00 m</strong>
+                    </div>
+                </div>
+
+                <!-- Tabel Riwayat Percobaan -->
+                <div style="margin-top: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>📋 Riwayat Hasil Percobaan</h4>
+                        <button id="btn-clear-table" class="btn-secondary" style="flex: none; padding: 0.3rem 0.7rem; font-size: 0.8rem;">Kosongkan Tabel</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Sudut (θ)</th>
+                                    <th>Kecepatan (v₀)</th>
+                                    <th>Gravitasi (g)</th>
+                                    <th>Tinggi Maks</th>
+                                    <th>Jarak Terjauh</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-body">
+                                <!-- Baris data otomatis ditambahkan lewat JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>PhysLab 10 • Modul Gerak Parabola (Kinematika 2D)</p>
+        </div>
+    </footer>
+
+    <!-- Menghubungkan ke file JavaScript khusus simulasi parabola -->
+    <script src="parabola.js"></script>
+</body>
+</html>
