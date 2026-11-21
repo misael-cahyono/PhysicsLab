@@ -293,3 +293,20 @@ btnFormula.addEventListener('click', () => {
     if (formulaPanel.style.display === 'none') {
         formulaPanel.style.display = 'block';
         btnFormula.textContent = 'Sembunyikan Rumus';
+} else {
+formulaPanel.style.display = 'none';
+btnFormula.textContent = 'Lihat Rumus';
+}
+});
+themeToggle.addEventListener('click', () => {
+const htmlElement = document.documentElement;
+if (htmlElement.getAttribute('data-theme') === 'light') {
+htmlElement.setAttribute('data-theme', 'dark');
+themeToggle.textContent = '☀️ Mode Terang';
+} else {
+htmlElement.setAttribute('data-theme', 'light');
+themeToggle.textContent = '🌙 Mode Gelap';
+}
+});
+// Jalankan gambar awal saat halaman dimuat
+drawScene();
