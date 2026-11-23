@@ -28,7 +28,6 @@
 </head>
 <body>
 
-    <!-- Navigasi Atas -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo">
@@ -47,7 +46,6 @@
         </div>
     </header>
 
-    <!-- Area Utama Simulasi -->
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
             <h2>5. Simulator Hukum Kekekalan Energi Mekanik</h2>
@@ -56,11 +54,9 @@
 
         <div class="sim-layout">
             
-            <!-- PANEL KIRI: Kontrol Variabel Pengguna -->
             <aside class="control-panel">
                 <h3 style="margin-bottom: 1rem;">Variabel Lintasan</h3>
 
-                <!-- Input Tinggi Awal (h1) -->
                 <div class="control-group">
                     <label>
                         <span>Tinggi Bukit Awal (h₁)</span>
@@ -69,7 +65,6 @@
                     <input type="range" id="input-h1" min="5" max="25" step="1" value="15">
                 </div>
 
-                <!-- Input Tinggi Bukit Kedua (h2) -->
                 <div class="control-group">
                     <label>
                         <span>Tinggi Bukit Kedua (h₂)</span>
@@ -78,7 +73,6 @@
                     <input type="range" id="input-h2" min="2" max="25" step="1" value="10">
                 </div>
 
-                <!-- Input Massa Kereta (m) -->
                 <div class="control-group">
                     <label>
                         <span>Massa Kereta (m)</span>
@@ -87,7 +81,6 @@
                     <input type="range" id="input-m" min="10" max="100" step="10" value="50">
                 </div>
 
-                <!-- Tombol Kontrol -->
                 <div class="btn-group">
                     <button id="btn-play" class="btn-primary" style="flex: 2;">▶ Luncurkan Kereta</button>
                     <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
@@ -97,25 +90,46 @@
                     <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
                 </div>
 
-                <!-- Kotak Rumus -->
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
                     <strong>Rumus Kekekalan Energi:</strong><br>
                     • Energi Potensial: <code>EP = m · g · h</code><br>
                     • Energi Kinetik: <code>EK = ½ · m · v²</code><br>
                     • Energi Mekanik: <code>EM = EP + EK</code><br>
-                    • Kecepatan: <code>v = √(2 · g · (h₁ - h))</code>
+                    • Kecepatan Lembah: <code>v_max = √(2 · g · h₁)</code>
                 </div>
             </aside>
 
-            <!-- PANEL KANAN: Kanvas Roller Coaster, Grafik Energi & Output -->
             <section class="visual-panel">
+                
+                <!-- KOTAK MISI TANTANGAN -->
+                <div class="challenge-box">
+                    <div class="challenge-header">
+                        <h4>🎯 Misi Tantangan: Kecepatan Maksimum Lembah!</h4>
+                        <span id="total-score" class="score-badge">0 Poin</span>
+                    </div>
+                    <p id="challenge-desc" class="challenge-text">
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan target kecepatan kereta di dasar lembah!
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
+                    </div>
+                    <div id="challenge-feedback" class="challenge-feedback"></div>
+                </div>
+
                 <div id="status-box" class="status-badge status-lolos">
                     Prediksi: Kereta Mampu Melewati Bukit Kedua (h₁ ≥ h₂)
                 </div>
 
                 <canvas id="energy-canvas" width="650" height="380"></canvas>
 
-                <!-- Kartu Output Real-Time -->
+                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
+                <div class="export-bar">
+                    <button class="btn-export" onclick="downloadCanvasImage('energy-canvas', 'laporan-kekekalan-energi')">
+                        📷 Simpan Gambar Lintasan (.PNG)
+                    </button>
+                </div>
+
                 <div class="output-grid">
                     <div class="output-item">
                         <span>Energi Potensial (EP)</span>
@@ -137,6 +151,30 @@
             </section>
 
         </div>
+
+        <!-- PANEL PANDUAN LKS -->
+        <section class="lks-panel">
+            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Kekekalan Energi</h3>
+            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
+            <ul class="lks-list">
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 1 (Konversi EP ke EK):</strong> Atur <code>h₁ = 20 m</code> dan <code>h₂ = 10 m</code>. Luncurkan kereta dan perhatikan <strong>Grafik Energi Live</strong> di pojok kanan atas kanvas: saat kereta di dasar lembah (h = 0), seluruh EP berubah menjadi EK sementara batang EM tetap konstan!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 2 (Bukit Kedua Lebih Tinggi):</strong> Atur <code>h₁ = 10 m</code> dan <code>h₂ = 18 m</code>, lalu luncurkan kereta. Amati apa yang terjadi saat kereta menanjak bukit kedua!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 3 (Pengaruh Massa pada Kecepatan):</strong> Ubah massa kereta dari <code>20 kg</code> menjadi <code>100 kg</code> pada ketinggian <code>h₁ = 15 m</code>. Amati apakah nilai <strong>Kecepatan Kereta (v)</strong> berubah atau tetap sama!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik <strong>"Buat Misi Baru"</strong>, hitung ketinggian bukit awal (h₁) yang tepat agar kecepatan di dasar lembah sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> (+100 Poin).</span>
+                </li>
+            </ul>
+        </section>
     </main>
 
     <footer>
@@ -145,7 +183,7 @@
         </div>
     </footer>
 
-    <!-- Menghubungkan ke file JavaScript khusus simulasi energi -->
+    <script src="lab-tools.js"></script>
     <script src="energi.js"></script>
 </body>
 </html>
