@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <!-- Navigasi Atas -->
+    <!-- Navigasi Atas Lengkap -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo">
@@ -17,8 +17,11 @@
             </div>
             <nav>
                 <a href="index.html">Beranda</a>
-                <a href="parabola.html">Gerak Parabola</a>
-                <a href="pegas.html" class="active">Hukum Hooke</a>
+                <a href="parabola.html">Parabola</a>
+                <a href="pegas.html" class="active">Pegas</a>
+                <a href="bidang-miring.html">Bidang Miring</a>
+                <a href="bandul.html">Bandul</a>
+                <a href="energi.html">Energi</a>
                 <button id="theme-toggle" class="btn-theme">🌙 Mode Gelap</button>
             </nav>
         </div>
@@ -37,7 +40,6 @@
             <aside class="control-panel">
                 <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
 
-                <!-- Input Konstanta Pegas (k) -->
                 <div class="control-group">
                     <label>
                         <span>Konstanta Pegas (k)</span>
@@ -46,7 +48,6 @@
                     <input type="range" id="input-k" min="10" max="100" step="5" value="50">
                 </div>
 
-                <!-- Input Massa Beban (m) -->
                 <div class="control-group">
                     <label>
                         <span>Massa Beban (m)</span>
@@ -55,7 +56,6 @@
                     <input type="range" id="input-m" min="0" max="5" step="0.5" value="1">
                 </div>
 
-                <!-- Pilihan Gravitasi (g) -->
                 <div class="control-group">
                     <label for="input-g">Percepatan Gravitasi (g)</label>
                     <select id="input-g">
@@ -66,7 +66,6 @@
                     </select>
                 </div>
 
-                <!-- Mode Simulasi -->
                 <div class="control-group">
                     <label for="input-mode">Mode Simulasi</label>
                     <select id="input-mode">
@@ -75,13 +74,11 @@
                     </select>
                 </div>
 
-                <!-- Tombol Aksi -->
                 <div class="btn-group">
                     <button id="btn-reset" class="btn-secondary">Reset</button>
                     <button id="btn-formula" class="btn-primary" style="flex: 1;">Lihat Rumus</button>
                 </div>
 
-                <!-- Kotak Rumus (Tersembunyi secara default) -->
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
                     <strong>Rumus yang Digunakan:</strong><br>
                     • Gaya Berat: <code>w = m · g</code><br>
@@ -91,9 +88,33 @@
                 </div>
             </aside>
 
-            <!-- PANEL KANAN: Visualisasi Kanvas & Output Hasil -->
+            <!-- PANEL KANAN: Misi Tantangan, Kanvas & Output -->
             <section class="visual-panel">
+                
+                <!-- KOTAK MISI TANTANGAN (GAMIFIKASI) -->
+                <div class="challenge-box">
+                    <div class="challenge-header">
+                        <h4>🎯 Misi Tantangan: Kalibrasi Pegas!</h4>
+                        <span id="total-score" class="score-badge">0 Poin</span>
+                    </div>
+                    <p id="challenge-desc" class="challenge-text">
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan target pertambahan panjang pegas!
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
+                    </div>
+                    <div id="challenge-feedback" class="challenge-feedback"></div>
+                </div>
+
                 <canvas id="pegas-canvas" width="650" height="420"></canvas>
+
+                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
+                <div class="export-bar">
+                    <button class="btn-export" onclick="downloadCanvasImage('pegas-canvas', 'laporan-hukum-hooke')">
+                        📷 Simpan Gambar Pegas (.PNG)
+                    </button>
+                </div>
 
                 <!-- Kartu Output Real-Time -->
                 <div class="output-grid">
@@ -117,6 +138,30 @@
             </section>
 
         </div>
+
+        <!-- PANEL PANDUAN PRAKTIKUM (LKS) -->
+        <section class="lks-panel">
+            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Hukum Hooke</h3>
+            <p>Ikuti langkah-langkah berikut dan centang kotak jika sudah selesai mengujinya:</p>
+            <ul class="lks-list">
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 1 (Hubungan Gaya & Pertambahan Panjang):</strong> Atur konstanta pegas tetap pada <code>50 N/m</code> di gravitasi Bumi. Uji massa beban <code>1.0 kg</code>, <code>2.0 kg</code>, dan <code>4.0 kg</code>. Amati apakah pertambahan panjang (Δx) berbanding lurus dengan massa beban!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 2 (Pengaruh Kekakuan Pegas):</strong> Biarkan massa beban tetap di <code>2.0 kg</code>, lalu ubah konstanta pegas dari <code>20 N/m</code> menjadi <code>80 N/m</code>. Perhatikan perubahan ketebalan ulir pegas dan berkurangnya Δx.</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 3 (Getaran Harmonik):</strong> Ubah Mode Simulasi ke <strong>Mode Dinamis</strong>, lalu amati apakah perubahan massa beban memengaruhi waktu <strong>Periode Getaran (T)</strong>.</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik tombol <strong>"Buat Misi Baru"</strong>, hitung kombinasi <code>k</code> dan <code>m</code> yang menghasilkan Δx sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> untuk meraih +100 Poin!</span>
+                </li>
+            </ul>
+        </section>
     </main>
 
     <footer>
@@ -125,7 +170,7 @@
         </div>
     </footer>
 
-    <!-- Menghubungkan ke file JavaScript khusus simulasi pegas -->
+    <script src="lab-tools.js"></script>
     <script src="pegas.js"></script>
 </body>
 </html>
