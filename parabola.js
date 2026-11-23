@@ -145,7 +145,8 @@ function drawTrail(points, color) {
         const sx = originX + points[i].x * scale, sy = originY - points[i].y * scale;
         if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
     }
-    ctx.stroke(); ctx.setLineDash([]);
+    ctx.stroke(); ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 1.0;
 }
 
 inputAngle.addEventListener('input', updatePreview);
