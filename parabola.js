@@ -312,7 +312,10 @@ function addHistoryRow(no, ang, vel, grav, ymax, xmax) {
 inputAngle.addEventListener('input', updatePreview);
 inputV0.addEventListener('input', updatePreview);
 inputG.addEventListener('change', updatePreview);
-btnNewMission.addEventListener('click', createNewMission);
+if (btnNewMission) {
+    btnNewMission.addEventListener('click', createNewMission);
+}
+
 btnFire.addEventListener('click', () => {
 t = 0;
 currentTrail = [];
