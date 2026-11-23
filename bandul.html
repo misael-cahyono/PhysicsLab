@@ -6,7 +6,6 @@
     <title>Lab Ayunan Bandul Sederhana - PhysLab 10</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Gaya tambahan khusus Stopwatch Praktikum */
         .stopwatch-box {
             background-color: var(--bg-main);
             border: 1px solid var(--border-color);
@@ -26,7 +25,6 @@
 </head>
 <body>
 
-    <!-- Navigasi Atas -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo">
@@ -45,7 +43,6 @@
         </div>
     </header>
 
-    <!-- Area Utama Simulasi -->
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
             <h2>4. Lab Virtual Ayunan Bandul Sederhana</h2>
@@ -54,11 +51,9 @@
 
         <div class="sim-layout">
             
-            <!-- PANEL KIRI: Kontrol Variabel & Stopwatch -->
             <aside class="control-panel">
                 <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
 
-                <!-- Input Panjang Tali (L) -->
                 <div class="control-group">
                     <label>
                         <span>Panjang Tali (L)</span>
@@ -67,7 +62,6 @@
                     <input type="range" id="input-l" min="0.2" max="2.0" step="0.05" value="1.0">
                 </div>
 
-                <!-- Input Massa Beban (m) -->
                 <div class="control-group">
                     <label>
                         <span>Massa Bola Bandul (m)</span>
@@ -76,7 +70,6 @@
                     <input type="range" id="input-m" min="0.5" max="5.0" step="0.5" value="1.0">
                 </div>
 
-                <!-- Input Sudut Simpangan Awal (θ₀) -->
                 <div class="control-group">
                     <label>
                         <span>Sudut Simpangan Awal (θ₀)</span>
@@ -85,7 +78,6 @@
                     <input type="range" id="input-angle" min="5" max="35" step="1" value="20">
                 </div>
 
-                <!-- Pilihan Gravitasi Planet (g) -->
                 <div class="control-group">
                     <label for="input-g">Percepatan Gravitasi (g)</label>
                     <select id="input-g">
@@ -96,13 +88,12 @@
                     </select>
                 </div>
 
-                <!-- Tombol Kontrol Ayunan -->
                 <div class="btn-group">
                     <button id="btn-toggle" class="btn-primary" style="flex: 2;">⏸ Jeda Ayunan</button>
                     <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
                 </div>
 
-                <!-- Stopwatch Digital Terintegrasi -->
+                <!-- Stopwatch Digital Praktikum -->
                 <div class="stopwatch-box">
                     <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">⏱️ Stopwatch Praktikum (Ukur 10 Ayunan)</span>
                     <div id="sw-display" class="stopwatch-display">00.00 s</div>
@@ -116,7 +107,6 @@
                     <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
                 </div>
 
-                <!-- Kotak Rumus -->
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
                     <strong>Rumus Bandul Sederhana:</strong><br>
                     • Periode Ayunan: <code>T = 2π · √(L / g)</code><br>
@@ -126,11 +116,33 @@
                 </div>
             </aside>
 
-            <!-- PANEL KANAN: Visualisasi Ayunan & Output -->
             <section class="visual-panel">
+                
+                <!-- KOTAK MISI TANTANGAN -->
+                <div class="challenge-box">
+                    <div class="challenge-header">
+                        <h4>🎯 Misi Tantangan: Kalibrasi Jam Bandul!</h4>
+                        <span id="total-score" class="score-badge">0 Poin</span>
+                    </div>
+                    <p id="challenge-desc" class="challenge-text">
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan tantangan periode ayunan bandul!
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
+                    </div>
+                    <div id="challenge-feedback" class="challenge-feedback"></div>
+                </div>
+
                 <canvas id="pendulum-canvas" width="650" height="400"></canvas>
 
-                <!-- Kartu Output Real-Time -->
+                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
+                <div class="export-bar">
+                    <button class="btn-export" onclick="downloadCanvasImage('pendulum-canvas', 'laporan-ayunan-bandul')">
+                        📷 Simpan Gambar Bandul (.PNG)
+                    </button>
+                </div>
+
                 <div class="output-grid">
                     <div class="output-item">
                         <span>Periode Ayunan (T)</span>
@@ -152,6 +164,30 @@
             </section>
 
         </div>
+
+        <!-- PANEL PANDUAN LKS -->
+        <section class="lks-panel">
+            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Ayunan Bandul</h3>
+            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
+            <ul class="lks-list">
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 1 (Pengaruh Massa Beban):</strong> Atur panjang tali <code>1.00 m</code> di gravitasi Bumi. Ubah massa bola bandul dari <code>0.5 kg</code> menjadi <code>5.0 kg</code>. Amati apakah nilai <strong>Periode Ayunan (T)</strong> berubah!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 2 (Pengaruh Panjang Tali):</strong> Ubah panjang tali dari <code>0.25 m</code> menjadi <code>1.00 m</code> (4 kali lebih panjang). Buktikan apakah periode ayunan (T) menjadi 2 kali lebih lama sesuai rumus <code>T ∝ √L</code>!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 3 (Praktikum Stopwatch 10 Ayunan):</strong> Tekan <strong>Reset</strong>, lalu jalankan Stopwatch bersamaan dengan dimulainya ayunan. Hentikan Stopwatch tepat saat penghitung mencapai <strong>10 Kali</strong>, lalu bagi waktu tersebut dengan 10 untuk mencocokkan nilai T.</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik <strong>"Buat Misi Baru"</strong>, atur panjang tali (L) yang menghasilkan periode sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> (+100 Poin).</span>
+                </li>
+            </ul>
+        </section>
     </main>
 
     <footer>
@@ -160,7 +196,7 @@
         </div>
     </footer>
 
-    <!-- Menghubungkan ke file JavaScript khusus simulasi bandul -->
+    <script src="lab-tools.js"></script>
     <script src="bandul.js"></script>
 </body>
 </html>
