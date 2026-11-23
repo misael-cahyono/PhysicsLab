@@ -283,7 +283,7 @@ function drawTrail(points, color) {
     if (points.length < 2) return;
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
+    ctx.setLineDash(new Array(6, 4)); // Garis putus-putus aman tanpa kurung siku
     ctx.beginPath();
     points.forEach((pt, index) => {
         const sx = originX + pt.x * scale;
@@ -313,16 +313,16 @@ function drawCannon() {
 
 function addHistoryRow(no, ang, vel, grav, ymax, xmax) {
     const row = document.createElement('tr');
-    row.innerHTML = `
-${no}
-${ang}°
-${vel} m/s
-${grav} m/s²
-${ymax.toFixed(2)} m
-${xmax.toFixed(2)} m
-`;
-historyBody.prepend(row);
+    row.innerHTML = 
+        '<td>' + no + '</td>' +
+        '<td>' + ang + '°</td>' +
+        '<td>' + vel + ' m/s</td>' +
+        '<td>' + grav + ' m/s²</td>' +
+        '<td>' + ymax.toFixed(2) + ' m</td>' +
+        '<td>' + xmax.toFixed(2) + ' m</td>';
+    historyBody.prepend(row);
 }
+
 // =========================================
 // 7. EVENT LISTENER (TOMBOL & SLIDER)
 // =========================================
@@ -330,43 +330,51 @@ inputAngle.addEventListener('input', updatePreview);
 inputV0.addEventListener('input', updatePreview);
 inputG.addEventListener('change', updatePreview);
 btnNewMission.addEventListener('click', createNewMission);
+
 btnFire.addEventListener('click', () => {
-t = 0;
-currentTrail = [];
-isRunning = true;
-isPaused = false;
-btnPause.textContent = 'Jeda';
-shotCount++;
-animate();
+    t = 0;
+    currentTrail = [];
+    isRunning = true;
+    isPaused = false;
+    btnPause.textContent = 'Jeda';
+    shotCount++;
+    animate();
 });
+
 btnPause.addEventListener('click', () => {
-if (!isRunning) return;
-isPaused = !isPaused;
-btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
-if (!isPaused) animate();
+    if (!isRunning) return;
+    isPaused = !isPaused;
+    btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
+    if (!isPaused) animate();
 });
+
 btnClear.addEventListener('click', () => {
-isRunning = false;
-isPaused = false;
-t = 0;
-trajectories = [];
-currentTrail = [];
-outT.textContent = '0.00 s';
-outPos.textContent = '0.0m, 0.0m';
-drawScene(0, 0);
+    isRunning = false;
+    isPaused = false;
+    t = 0;
+    trajectories = [];
+    currentTrail = [];
+    outT.textContent = '0.00 s';
+    outPos.textContent = '0.0m, 0.0m';
+    drawScene(0, 0);
 });
+
 btnClearTable.addEventListener('click', () => {
-historyBody.innerHTML = '';
-shotCount = 0;
+    historyBody.innerHTML = '';
+    shotCount = 0;
 });
+
 btnFormula.addEventListener('click', () => {
-if (formulaPanel.style.display === 'none') {
-formulaPanel.style.display = 'block';
-btnFormula.textContent = 'Sembunyikan Rumus';
-} else {
-formulaPanel.style.display = 'none';
-btnFormula.textContent = 'Lihat Rumus';
-}
+    if (formulaPanel.style.display === 'none') {
+        formulaPanel.style.display = 'block';
+        btnFormula.textContent = 'Sembunyikan Rumus';
+    } else {
+        formulaPanel.style.display = 'none';
+        btnFormula.textContent = 'Lihat Rumus';
+    }
 });
+
 // Tampilkan kondisi awal
 updatePreview();
+
+
