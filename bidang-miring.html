@@ -28,7 +28,6 @@
 </head>
 <body>
 
-    <!-- Navigasi Atas -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo">
@@ -47,7 +46,6 @@
         </div>
     </header>
 
-    <!-- Area Utama Simulasi -->
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
             <h2>3. Simulator Bidang Miring & Gaya Gesek (Hukum Newton)</h2>
@@ -56,11 +54,9 @@
 
         <div class="sim-layout">
             
-            <!-- PANEL KIRI: Kontrol Variabel Pengguna -->
             <aside class="control-panel">
                 <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
 
-                <!-- Input Sudut Kemiringan -->
                 <div class="control-group">
                     <label>
                         <span>Sudut Kemiringan (θ)</span>
@@ -69,7 +65,6 @@
                     <input type="range" id="input-angle" min="5" max="60" step="1" value="30">
                 </div>
 
-                <!-- Input Massa Balok -->
                 <div class="control-group">
                     <label>
                         <span>Massa Balok (m)</span>
@@ -78,7 +73,6 @@
                     <input type="range" id="input-m" min="1" max="10" step="0.5" value="2">
                 </div>
 
-                <!-- Input Koefisien Gesek -->
                 <div class="control-group">
                     <label>
                         <span>Koefisien Gesek (μ)</span>
@@ -87,7 +81,6 @@
                     <input type="range" id="input-mu" min="0" max="0.8" step="0.05" value="0.2">
                 </div>
 
-                <!-- Preset Jenis Permukaan -->
                 <div class="control-group">
                     <label for="preset-surface">Contoh Permukaan Cepat</label>
                     <select id="preset-surface">
@@ -99,13 +92,11 @@
                     </select>
                 </div>
 
-                <!-- Opsi Tampilkan Vektor Gaya -->
                 <div class="control-group" style="display: flex; align-items: center; gap: 0.5rem;">
                     <input type="checkbox" id="check-vectors" checked style="width: 18px; height: 18px; cursor: pointer;">
                     <label for="check-vectors" style="margin: 0; cursor: pointer;">Tampilkan Panah Vektor Gaya</label>
                 </div>
 
-                <!-- Tombol Aksi -->
                 <div class="btn-group">
                     <button id="btn-start" class="btn-primary" style="flex: 2;">▶ Lepaskan Balok</button>
                     <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
@@ -115,7 +106,6 @@
                     <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
                 </div>
 
-                <!-- Kotak Rumus -->
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
                     <strong>Rumus Bidang Miring:</strong><br>
                     • Gaya Sejajar Bidang: <code>w·sin θ</code><br>
@@ -125,16 +115,37 @@
                 </div>
             </aside>
 
-            <!-- PANEL KANAN: Visualisasi Kanvas & Output -->
             <section class="visual-panel">
-                <!-- Indikator Status Benda -->
+                
+                <!-- KOTAK MISI TANTANGAN -->
+                <div class="challenge-box">
+                    <div class="challenge-header">
+                        <h4>🎯 Misi Tantangan: Percepatan Target!</h4>
+                        <span id="total-score" class="score-badge">0 Poin</span>
+                    </div>
+                    <p id="challenge-desc" class="challenge-text">
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan tantangan percepatan luncur balok!
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
+                    </div>
+                    <div id="challenge-feedback" class="challenge-feedback"></div>
+                </div>
+
                 <div id="status-box" class="status-badge status-gerak">
                     Status: Siap Diluncurkan (w·sin θ > f_gesek)
                 </div>
 
                 <canvas id="incline-canvas" width="650" height="380"></canvas>
 
-                <!-- Kartu Output Real-Time -->
+                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
+                <div class="export-bar">
+                    <button class="btn-export" onclick="downloadCanvasImage('incline-canvas', 'laporan-bidang-miring')">
+                        📷 Simpan Gambar Diagram (.PNG)
+                    </button>
+                </div>
+
                 <div class="output-grid">
                     <div class="output-item">
                         <span>Percepatan Balok (a)</span>
@@ -156,6 +167,30 @@
             </section>
 
         </div>
+
+        <!-- PANEL PANDUAN LKS -->
+        <section class="lks-panel">
+            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Bidang Miring</h3>
+            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
+            <ul class="lks-list">
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 1 (Sudut Kritis Mulai Bergerak):</strong> Pilih permukaan <strong>Karet di Atas Beton (μ = 0.50)</strong>. Naikkan sudut kemiringan perlahan dari <code>15°</code> sampai balok tepat siap meluncur. Catat sudut minimum tersebut!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 2 (Pengaruh Massa pada Percepatan):</strong> Pada sudut <code>40°</code> dan <code>μ = 0.20</code>, ubah massa balok dari <code>1.0 kg</code> menjadi <code>8.0 kg</code>. Amati apakah nilai <strong>Percepatan Balok (a)</strong> berubah atau tetap sama!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 3 (Bidang Licin Sempurna):</strong> Pilih permukaan <strong>Es Licin (μ = 0.00)</strong> dan sudut <code>30°</code>. Perhatikan bahwa panah gaya gesek (merah) menghilang dan percepatan tepat bernilai <code>g · sin 30° = 4.90 m/s²</code>.</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik <strong>"Buat Misi Baru"</strong>, atur sudut kemiringan yang menghasilkan percepatan sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> (+100 Poin).</span>
+                </li>
+            </ul>
+        </section>
     </main>
 
     <footer>
@@ -164,7 +199,7 @@
         </div>
     </footer>
 
-    <!-- Menghubungkan ke file JavaScript khusus simulasi bidang miring -->
+    <script src="lab-tools.js"></script>
     <script src="bidang-miring.js"></script>
 </body>
 </html>
