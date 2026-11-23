@@ -13,7 +13,7 @@ const savedTheme = localStorage.getItem('physlab-theme') || 'light';
 applyTheme(savedTheme);
 
 if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
+    themeToggleBtn.addEventListener('click', function() {
         const currentTheme = htmlElement.getAttribute('data-theme');
         const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
         applyTheme(nextTheme);
@@ -43,13 +43,13 @@ function exportTableToCSV(tableSelector, filename) {
     const table = document.querySelector(tableSelector);
     if (!table) return;
 
-    let csvContent = [];
+    let csvContent = new Array();
     const rows = table.querySelectorAll('tr');
 
-    rows.forEach(row => {
+    rows.forEach(function(row) {
         const cols = row.querySelectorAll('th, td');
-        const rowData = [];
-        cols.forEach(col => {
+        const rowData = new Array();
+        cols.forEach(function(col) {
             let text = col.innerText.replace(/"/g, '""');
             rowData.push('"' + text + '"');
         });
@@ -57,7 +57,7 @@ function exportTableToCSV(tableSelector, filename) {
     });
 
     const csvString = csvContent.join('\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(new Array(csvString), { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = filename + '.csv';
@@ -75,7 +75,7 @@ function updateChallengeScore(pointsToAdd) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     const savedScore = localStorage.getItem('physlab-score') || '0';
     const scoreDisplay = document.getElementById('total-score');
     if (scoreDisplay) {
