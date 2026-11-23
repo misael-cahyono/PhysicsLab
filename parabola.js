@@ -1,6 +1,3 @@
-// =========================================
-// 1. MENGAMBIL ELEMEN DARI HTML
-// =========================================
 const canvas = document.getElementById('parabola-canvas');
 const ctx = canvas.getContext('2d');
 
@@ -28,9 +25,6 @@ const btnNewMission = document.getElementById('btn-new-mission');
 const challengeDesc = document.getElementById('challenge-desc');
 const challengeFeedback = document.getElementById('challenge-feedback');
 
-// =========================================
-// 2. VARIABEL FISIKA, ANIMASI & MISI TARGET
-// =========================================
 let angle = 45;
 let v0 = 25;
 let g = 9.8;
@@ -46,14 +40,11 @@ const scale = 4.5;
 const originX = 45;
 const originY = canvas.height - 35;
 
-let trajectories = [];
-let currentTrail = [];
+let trajectories = new Array();
+let currentTrail = new Array();
 let shotCount = 0;
 const colors = new Array('#2563eb', '#dc2626', '#16a34a', '#d97706', '#9333ea');
 
-// =========================================
-// 3. MENGHITUNG & MEMPERBARUI TAMPILAN AWAL
-// =========================================
 function updatePreview() {
     angle = parseFloat(inputAngle.value);
     v0 = parseFloat(inputV0.value);
@@ -74,9 +65,6 @@ function updatePreview() {
     }
 }
 
-// =========================================
-// 4. LOGIKA ANIMASI GERAK PARABOLA
-// =========================================
 function animate() {
     if (!isRunning || isPaused) return;
 
@@ -121,22 +109,23 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-// =========================================
-// 5. LOGIKA MISI TANTANGAN (GAMIFIKASI)
-// =========================================
 function createNewMission() {
     targetDistance = Math.floor(Math.random() * 91) + 25;
     missionSolved = false;
 
-    challengeDesc.innerHTML = 'Sasaran muncul di jarak <strong>' + targetDistance + '.0 meter</strong>! Atur sudut (θ) dan kecepatan (v₀) agar bola jatuh tepat di papan target (toleransi ±2.0 m).';
-    challengeFeedback.style.display = 'none';
-    challengeFeedback.className = 'challenge-feedback';
+    if (challengeDesc) {
+        challengeDesc.innerHTML = 'Sasaran muncul di jarak <strong>' + targetDistance + '.0 meter</strong>! Atur sudut (θ) dan kecepatan (v₀) agar bola jatuh tepat di papan target (toleransi ±2.0 m).';
+    }
+    if (challengeFeedback) {
+        challengeFeedback.style.display = 'none';
+        challengeFeedback.className = 'challenge-feedback';
+    }
 
     drawScene(0, 0);
 }
 
 function checkMissionResult(landingX) {
-    if (targetDistance === null) return;
+    if (targetDistance === null || !challengeFeedback) return;
 
     const selisih = Math.abs(landingX - targetDistance);
     if (selisih <= 2.0) {
@@ -157,9 +146,6 @@ function checkMissionResult(landingX) {
     }
 }
 
-// =========================================
-// 6. FUNGSI MENGGAMBAR DI KANVAS
-// =========================================
 function drawScene(ballX, ballY) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -275,7 +261,7 @@ function drawTrail(points, color) {
         else ctx.lineTo(sx, sy);
     }
     ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.setLineDash(new Array());
 }
 
 function drawCannon() {
@@ -295,6 +281,7 @@ function drawCannon() {
 }
 
 function addHistoryRow(no, ang, vel, grav, ymax, xmax) {
+    if (!historyBody) return;
     const row = document.createElement('tr');
     row.innerHTML =
         '<td>' + no + '</td>' +
@@ -306,45 +293,49 @@ function addHistoryRow(no, ang, vel, grav, ymax, xmax) {
     historyBody.prepend(row);
 }
 
-// =========================================
-// 7. EVENT LISTENER (TOMBOL & SLIDER)
-// =========================================
 inputAngle.addEventListener('input', updatePreview);
 inputV0.addEventListener('input', updatePreview);
 inputG.addEventListener('change', updatePreview);
+
 if (btnNewMission) {
     btnNewMission.addEventListener('click', createNewMission);
 }
 
 btnFire.addEventListener('click', () => {
-t = 0;
-currentTrail = [];
-isRunning = true;
-isPaused = false;
-btnPause.textContent = 'Jeda';
-shotCount++;
-animate();
+    t = 0;
+    currentTrail = new Array();
+    isRunning = true;
+    isPaused = false;
+    btnPause.textContent = 'Jeda';
+    shotCount++;
+    animate();
 });
+
 btnPause.addEventListener('click', () => {
-if (!isRunning) return;
-isPaused = !isPaused;
-btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
-if (!isPaused) animate();
+    if (!isRunning) return;
+    isPaused = !isPaused;
+    btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
+    if (!isPaused) animate();
 });
+
 btnClear.addEventListener('click', () => {
-isRunning = false;
-isPaused = false;
-t = 0;
-trajectories = [];
-currentTrail = [];
-outT.textContent = '0.00 s';
-outPos.textContent = '0.0m, 0.0m';
-drawScene(0, 0);
+    isRunning = false;
+    isPaused = false;
+    t = 0;
+    trajectories = new Array();
+    currentTrail = new Array();
+    outT.textContent = '0.00 s';
+    outPos.textContent = '0.0m, 0.0m';
+    drawScene(0, 0);
 });
+
+if (btnClearTable) {
 btnClearTable.addEventListener('click', () => {
 historyBody.innerHTML = '';
 shotCount = 0;
 });
+}
+if (btnFormula) {
 btnFormula.addEventListener('click', () => {
 if (formulaPanel.style.display === 'none') {
 formulaPanel.style.display = 'block';
@@ -354,5 +345,5 @@ formulaPanel.style.display = 'none';
 btnFormula.textContent = 'Lihat Rumus';
 }
 });
-// Tampilkan kondisi awal
+}
 updatePreview();
