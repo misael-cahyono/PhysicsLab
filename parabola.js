@@ -27,10 +27,14 @@ const btnFormula = document.getElementById('btn-formula');
 const formulaPanel = document.getElementById('formula-panel');
 const historyBody = document.getElementById('history-body');
 const btnClearTable = document.getElementById('btn-clear-table');
-const themeToggle = document.getElementById('theme-toggle');
+
+// Elemen Misi Tantangan
+const btnNewMission = document.getElementById('btn-new-mission');
+const challengeDesc = document.getElementById('challenge-desc');
+const challengeFeedback = document.getElementById('challenge-feedback');
 
 // =========================================
-// 2. VARIABEL FISIKA & STATUS SIMULASI
+// 2. VARIABEL FISIKA, ANIMASI & MISI TARGET
 // =========================================
 let angle = 45;
 let v0 = 25;
@@ -40,10 +44,14 @@ let isRunning = false;
 let isPaused = false;
 let t = 0;
 
+// Variabel Misi Target
+let targetDistance = null; // Jarak sasaran dalam meter (null jika belum ada misi)
+let missionSolved = false;
+
 // Pengaturan koordinat kanvas (1 meter = 4.5 pixel)
 const scale = 4.5;
-const originX = 45;               // Posisi X meriam (kiri)
-const originY = canvas.height - 35; // Posisi Y tanah (bawah)
+const originX = 45;
+const originY = canvas.height - 35;
 
 // Menyimpan jejak lintasan tembakan sebelumnya
 let trajectories = []; 
@@ -62,7 +70,6 @@ function updatePreview() {
     valAngle.textContent = `${angle}°`;
     valV0.textContent = `${v0} m/s`;
 
-    // Hitung prediksi hasil maksimum menggunakan rumus fisika
     const rad = angle * (Math.PI / 180);
     const yMax = (Math.pow(v0, 2) * Math.pow(Math.sin(rad), 2)) / (2 * g);
     const xMax = (Math.pow(v0, 2) * Math.sin(2 * rad)) / g;
@@ -85,25 +92,19 @@ function animate() {
     const vx = v0 * Math.cos(rad);
     const vy = v0 * Math.sin(rad);
 
-    // Rumus posisi pada waktu t
     const x = vx * t;
     const y = (vy * t) - (0.5 * g * Math.pow(t, 2));
 
-    // Perbarui output real-time
     outT.textContent = `${t.toFixed(2)} s`;
     outPos.textContent = `${x.toFixed(1)}m, ${Math.max(0, y).toFixed(1)}m`;
 
-    // Simpan titik ke jejak lintasan saat ini
     currentTrail.push({ x: x, y: Math.max(0, y) });
-
-    // Gambar kondisi terbaru di kanvas
     drawScene(x, Math.max(0, y));
 
-    // Cek apakah bola sudah menyentuh tanah (y <= 0 setelah melayang)
+    // Cek jika bola sudah menyentuh tanah
     if (t > 0.05 && y <= 0) {
         isRunning = false;
         
-        // Hitung nilai eksak akhir untuk dicatat ke riwayat
         const totalTime = (2 * vy) / g;
         const finalX = vx * totalTime;
         const maxY = Math.pow(vy, 2) / (2 * g);
@@ -111,7 +112,6 @@ function animate() {
         outT.textContent = `${totalTime.toFixed(2)} s`;
         outPos.textContent = `${finalX.toFixed(1)}m, 0.0m`;
 
-        // Simpan lintasan lengkap beserta titik puncaknya
         const color = colors[(shotCount - 1) % colors.length];
         trajectories.push({
             points: [...currentTrail],
@@ -120,29 +120,70 @@ function animate() {
             peakY: maxY
         });
 
-        // Tambahkan baris data ke tabel HTML
         addHistoryRow(shotCount, angle, v0, g, maxY, finalX);
+        checkMissionResult(finalX); // Cek apakah tembakan mengenai target misi
         drawScene(finalX, 0);
         return;
     }
 
-    t += 0.04; // Tambah langkah waktu
+    t += 0.04;
     requestAnimationFrame(animate);
 }
 
 // =========================================
-// 5. FUNGSI MENGGAMBAR DI KANVAS
+// 5. LOGIKA MISI TANTANGAN (GAMIFIKASI)
+// =========================================
+function createNewMission() {
+    // Acak jarak sasaran antara 25m hingga 115m
+    targetDistance = Math.floor(Math.random() * 91) + 25;
+    missionSolved = false;
+    
+    challengeDesc.innerHTML = `Sasaran muncul di jarak <strong>${targetDistance}.0 meter</strong>! Atur sudut (θ) dan kecepatan (v₀) yang tepat agar bola jatuh tepat di papan target (toleransi ±2.0 m).`;
+    challengeFeedback.style.display = 'none';
+    challengeFeedback.className = 'challenge-feedback';
+    
+    drawScene(0, 0);
+}
+
+function checkMissionResult(landingX) {
+    if (targetDistance === null) return;
+
+    const selisih = Math.abs(landingX - targetDistance);
+    if (selisih <= 2.0) {
+        challengeFeedback.className = 'challenge-feedback feedback-success';
+        if (!missionSolved) {
+            missionSolved = true;
+            if (typeof updateChallengeScore === 'function') {
+                updateChallengeScore(100);
+            }
+            challengeFeedback.textContent = `🎉 TEPAT SASARAN! Bola jatuh di ${landingX.toFixed(1)} m (selisih ${selisih.toFixed(1)} m). Kamu dapat +100 Poin!`;
+        } else {
+            challengeFeedback.textContent = `✅ Mengenai sasaran lagi (${landingX.toFixed(1)} m)! Klik "Buat Misi Baru" untuk tantangan berikutnya.`;
+        }
+    } else {
+        challengeFeedback.className = 'challenge-feedback feedback-fail';
+        const arah = landingX < targetDistance ? 'terlalu pendek' : 'terlalu jauh';
+        challengeFeedback.textContent = `❌ Meleset! Bola jatuh di ${landingX.toFixed(1)} m (${arah} ${selisih.toFixed(1)} m dari target ${targetDistance} m). Coba lagi!`;
+    }
+}
+
+// =========================================
+// 6. FUNGSI MENGGAMBAR DI KANVAS
 // =========================================
 function drawScene(ballX, ballY) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 1. Gambar Grid Kertas Milimeter Blok & Skala Meter
+    // 1. Gambar Grid & Skala Meter
     drawGrid();
 
-    // 2. Gambar Semua Jejak Lintasan Sebelumnya
+    // 2. Gambar Target Sasaran Misi (Jika aktif)
+    if (targetDistance !== null) {
+        drawTarget(targetDistance);
+    }
+
+    // 3. Gambar Semua Jejak Lintasan Sebelumnya
     trajectories.forEach(traj => {
         drawTrail(traj.points, traj.color);
-        // Gambar titik puncak (Y_max)
         if (traj.peakY > 0.5) {
             const px = originX + traj.peakX * scale;
             const py = originY - traj.peakY * scale;
@@ -155,16 +196,16 @@ function drawScene(ballX, ballY) {
         }
     });
 
-    // 3. Gambar Jejak Lintasan yang Sedang Berjalan
+    // 4. Gambar Jejak Lintasan Aktif
     if (currentTrail.length > 0) {
         const activeColor = colors[(shotCount - 1) % colors.length];
         drawTrail(currentTrail, activeColor);
     }
 
-    // 4. Gambar Meriam Peluncur
+    // 5. Gambar Meriam
     drawCannon();
 
-    // 5. Gambar Proyektil (Bola)
+    // 6. Gambar Bola Proyektil
     const screenX = originX + (ballX * scale);
     const screenY = originY - (ballY * scale);
 
@@ -177,13 +218,39 @@ function drawScene(ballX, ballY) {
     ctx.stroke();
 }
 
+function drawTarget(distMeters) {
+    const tx = originX + distMeters * scale;
+    const ty = originY;
+
+    // Papan target merah-putih di tanah
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(tx - 10, ty - 5, 20, 10);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(tx - 5, ty - 5, 10, 10);
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(tx - 2, ty - 5, 4, 10);
+
+    // Bendera penanda di atas target
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(tx, ty - 5);
+    ctx.lineTo(tx, ty - 32);
+    ctx.stroke();
+
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 11px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Target (${distMeters}m)`, tx, ty - 36);
+    ctx.textAlign = 'left';
+}
+
 function drawGrid() {
     ctx.strokeStyle = '#e2e8f0';
     ctx.fillStyle = '#64748b';
     ctx.lineWidth = 1;
     ctx.font = '10px Segoe UI';
 
-    // Garis vertikal setiap 10 meter
     for (let m = 0; m <= 130; m += 10) {
         const x = originX + m * scale;
         if (x > canvas.width) break;
@@ -194,7 +261,6 @@ function drawGrid() {
         if (m > 0) ctx.fillText(`${m}m`, x - 10, originY + 15);
     }
 
-    // Garis horizontal setiap 10 meter
     for (let m = 10; m <= 80; m += 10) {
         const y = originY - m * scale;
         if (y < 10) break;
@@ -205,7 +271,6 @@ function drawGrid() {
         ctx.fillText(`${m}m`, 12, y + 3);
     }
 
-    // Garis Tanah Utama
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -218,7 +283,7 @@ function drawTrail(points, color) {
     if (points.length < 2) return;
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
-    ctx.setLineDash([5, 4]); // Garis putus-putus
+    ctx.setLineDash([5, 5]);
     ctx.beginPath();
     points.forEach((pt, index) => {
         const sx = originX + pt.x * scale;
@@ -231,17 +296,15 @@ function drawTrail(points, color) {
 }
 
 function drawCannon() {
-    const rad = -angle * (Math.PI / 180); // Negatif karena sumbu Y kanvas ke bawah
+    const rad = -angle * (Math.PI / 180);
     ctx.save();
     ctx.translate(originX, originY);
     ctx.rotate(rad);
 
-    // Laras meriam
     ctx.fillStyle = '#334155';
     ctx.fillRect(0, -6, 32, 12);
     ctx.restore();
 
-    // Roda/Dudukkan meriam
     ctx.fillStyle = '#0f172a';
     ctx.beginPath();
     ctx.arc(originX, originY, 10, 0, Math.PI * 2);
@@ -251,76 +314,59 @@ function drawCannon() {
 function addHistoryRow(no, ang, vel, grav, ymax, xmax) {
     const row = document.createElement('tr');
     row.innerHTML = `
-        <td>${no}</td>
-        <td>${ang}°</td>
-        <td>${vel} m/s</td>
-        <td>${grav} m/s²</td>
-        <td>${ymax.toFixed(2)} m</td>
-        <td>${xmax.toFixed(2)} m</td>
-    `;
-    historyBody.prepend(row); // Data terbaru muncul paling atas
+${no}
+${ang}°
+${vel} m/s
+${grav} m/s²
+${ymax.toFixed(2)} m
+${xmax.toFixed(2)} m
+`;
+historyBody.prepend(row);
 }
-
 // =========================================
-// 6. EVENT LISTENER (TOMBOL & SLIDER)
+// 7. EVENT LISTENER (TOMBOL & SLIDER)
 // =========================================
 inputAngle.addEventListener('input', updatePreview);
 inputV0.addEventListener('input', updatePreview);
 inputG.addEventListener('change', updatePreview);
-
+btnNewMission.addEventListener('click', createNewMission);
 btnFire.addEventListener('click', () => {
-    t = 0;
-    currentTrail = [];
-    isRunning = true;
-    isPaused = false;
-    btnPause.textContent = 'Jeda';
-    shotCount++;
-    animate();
+t = 0;
+currentTrail = [];
+isRunning = true;
+isPaused = false;
+btnPause.textContent = 'Jeda';
+shotCount++;
+animate();
 });
-
 btnPause.addEventListener('click', () => {
-    if (!isRunning) return;
-    isPaused = !isPaused;
-    btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
-    if (!isPaused) animate();
+if (!isRunning) return;
+isPaused = !isPaused;
+btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
+if (!isPaused) animate();
 });
-
 btnClear.addEventListener('click', () => {
-    isRunning = false;
-    isPaused = false;
-    t = 0;
-    trajectories = [];
-    currentTrail = [];
-    outT.textContent = '0.00 s';
-    outPos.textContent = '0.0m, 0.0m';
-    drawScene(0, 0);
+isRunning = false;
+isPaused = false;
+t = 0;
+trajectories = [];
+currentTrail = [];
+outT.textContent = '0.00 s';
+outPos.textContent = '0.0m, 0.0m';
+drawScene(0, 0);
 });
-
 btnClearTable.addEventListener('click', () => {
-    historyBody.innerHTML = '';
-    shotCount = 0;
+historyBody.innerHTML = '';
+shotCount = 0;
 });
-
 btnFormula.addEventListener('click', () => {
-    if (formulaPanel.style.display === 'none') {
-        formulaPanel.style.display = 'block';
-        btnFormula.textContent = 'Sembunyikan Rumus';
-    } else {
-        formulaPanel.style.display = 'none';
-        btnFormula.textContent = 'Lihat Rumus';
-    }
+if (formulaPanel.style.display === 'none') {
+formulaPanel.style.display = 'block';
+btnFormula.textContent = 'Sembunyikan Rumus';
+} else {
+formulaPanel.style.display = 'none';
+btnFormula.textContent = 'Lihat Rumus';
+}
 });
-
-themeToggle.addEventListener('click', () => {
-    const htmlElement = document.documentElement;
-    if (htmlElement.getAttribute('data-theme') === 'light') {
-        htmlElement.setAttribute('data-theme', 'dark');
-        themeToggle.textContent = '☀️ Mode Terang';
-    } else {
-        htmlElement.setAttribute('data-theme', 'light');
-        themeToggle.textContent = '🌙 Mode Gelap';
-    }
-});
-
-// Tampilkan kondisi awal saat halaman dibuka
+// Tampilkan kondisi awal
 updatePreview();
