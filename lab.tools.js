@@ -4,8 +4,7 @@ const themeToggleBtn = document.getElementById('theme-toggle');
 function applyTheme(theme) {
     htmlElement.setAttribute('data-theme', theme);
     localStorage.setItem('physlab-theme', theme);
-    if (themeToggleBtn) {
-        themeToggleBtn.textContent = theme === 'dark' ? '☀️ Mode Terang' : '🌙 Mode Gelap';
+   
     }
 }
 
