@@ -4,22 +4,18 @@
 const canvas = document.getElementById('parabola-canvas');
 const ctx = canvas.getContext('2d');
 
-// Input kontrol
 const inputAngle = document.getElementById('input-angle');
 const inputV0 = document.getElementById('input-v0');
 const inputG = document.getElementById('input-g');
 
-// Label nilai slider
 const valAngle = document.getElementById('val-angle');
 const valV0 = document.getElementById('val-v0');
 
-// Output kartu hasil
 const outT = document.getElementById('out-t');
 const outPos = document.getElementById('out-pos');
 const outYmax = document.getElementById('out-ymax');
 const outXmax = document.getElementById('out-xmax');
 
-// Tombol & Tabel
 const btnFire = document.getElementById('btn-fire');
 const btnPause = document.getElementById('btn-pause');
 const btnClear = document.getElementById('btn-clear');
@@ -28,7 +24,6 @@ const formulaPanel = document.getElementById('formula-panel');
 const historyBody = document.getElementById('history-body');
 const btnClearTable = document.getElementById('btn-clear-table');
 
-// Elemen Misi Tantangan
 const btnNewMission = document.getElementById('btn-new-mission');
 const challengeDesc = document.getElementById('challenge-desc');
 const challengeFeedback = document.getElementById('challenge-feedback');
@@ -44,20 +39,17 @@ let isRunning = false;
 let isPaused = false;
 let t = 0;
 
-// Variabel Misi Target
-let targetDistance = null; // Jarak sasaran dalam meter (null jika belum ada misi)
+let targetDistance = null;
 let missionSolved = false;
 
-// Pengaturan koordinat kanvas (1 meter = 4.5 pixel)
 const scale = 4.5;
 const originX = 45;
 const originY = canvas.height - 35;
 
-// Menyimpan jejak lintasan tembakan sebelumnya
-let trajectories = []; 
+let trajectories = [];
 let currentTrail = [];
 let shotCount = 0;
-const colors = ['#2563eb', '#dc2626', '#16a34a', '#d97706', '#9333ea'];
+const colors = new Array('#2563eb', '#dc2626', '#16a34a', '#d97706', '#9333ea');
 
 // =========================================
 // 3. MENGHITUNG & MEMPERBARUI TAMPILAN AWAL
@@ -67,15 +59,15 @@ function updatePreview() {
     v0 = parseFloat(inputV0.value);
     g = parseFloat(inputG.value);
 
-    valAngle.textContent = `${angle}°`;
-    valV0.textContent = `${v0} m/s`;
+    valAngle.textContent = angle + '°';
+    valV0.textContent = v0 + ' m/s';
 
     const rad = angle * (Math.PI / 180);
     const yMax = (Math.pow(v0, 2) * Math.pow(Math.sin(rad), 2)) / (2 * g);
     const xMax = (Math.pow(v0, 2) * Math.sin(2 * rad)) / g;
 
-    outYmax.textContent = `${yMax.toFixed(2)} m`;
-    outXmax.textContent = `${xMax.toFixed(2)} m`;
+    outYmax.textContent = yMax.toFixed(2) + ' m';
+    outXmax.textContent = xMax.toFixed(2) + ' m';
 
     if (!isRunning) {
         drawScene(0, 0);
@@ -95,33 +87,32 @@ function animate() {
     const x = vx * t;
     const y = (vy * t) - (0.5 * g * Math.pow(t, 2));
 
-    outT.textContent = `${t.toFixed(2)} s`;
-    outPos.textContent = `${x.toFixed(1)}m, ${Math.max(0, y).toFixed(1)}m`;
+    outT.textContent = t.toFixed(2) + ' s';
+    outPos.textContent = x.toFixed(1) + 'm, ' + Math.max(0, y).toFixed(1) + 'm';
 
     currentTrail.push({ x: x, y: Math.max(0, y) });
     drawScene(x, Math.max(0, y));
 
-    // Cek jika bola sudah menyentuh tanah
     if (t > 0.05 && y <= 0) {
         isRunning = false;
-        
+
         const totalTime = (2 * vy) / g;
         const finalX = vx * totalTime;
         const maxY = Math.pow(vy, 2) / (2 * g);
 
-        outT.textContent = `${totalTime.toFixed(2)} s`;
-        outPos.textContent = `${finalX.toFixed(1)}m, 0.0m`;
+        outT.textContent = totalTime.toFixed(2) + ' s';
+        outPos.textContent = finalX.toFixed(1) + 'm, 0.0m';
 
         const color = colors[(shotCount - 1) % colors.length];
         trajectories.push({
-            points: [...currentTrail],
+            points: currentTrail.slice(),
             color: color,
             peakX: finalX / 2,
             peakY: maxY
         });
 
         addHistoryRow(shotCount, angle, v0, g, maxY, finalX);
-        checkMissionResult(finalX); // Cek apakah tembakan mengenai target misi
+        checkMissionResult(finalX);
         drawScene(finalX, 0);
         return;
     }
@@ -134,14 +125,13 @@ function animate() {
 // 5. LOGIKA MISI TANTANGAN (GAMIFIKASI)
 // =========================================
 function createNewMission() {
-    // Acak jarak sasaran antara 25m hingga 115m
     targetDistance = Math.floor(Math.random() * 91) + 25;
     missionSolved = false;
-    
-    challengeDesc.innerHTML = `Sasaran muncul di jarak <strong>${targetDistance}.0 meter</strong>! Atur sudut (θ) dan kecepatan (v₀) yang tepat agar bola jatuh tepat di papan target (toleransi ±2.0 m).`;
+
+    challengeDesc.innerHTML = 'Sasaran muncul di jarak <strong>' + targetDistance + '.0 meter</strong>! Atur sudut (θ) dan kecepatan (v₀) agar bola jatuh tepat di papan target (toleransi ±2.0 m).';
     challengeFeedback.style.display = 'none';
     challengeFeedback.className = 'challenge-feedback';
-    
+
     drawScene(0, 0);
 }
 
@@ -156,14 +146,14 @@ function checkMissionResult(landingX) {
             if (typeof updateChallengeScore === 'function') {
                 updateChallengeScore(100);
             }
-            challengeFeedback.textContent = `🎉 TEPAT SASARAN! Bola jatuh di ${landingX.toFixed(1)} m (selisih ${selisih.toFixed(1)} m). Kamu dapat +100 Poin!`;
+            challengeFeedback.textContent = '🎉 TEPAT SASARAN! Bola jatuh di ' + landingX.toFixed(1) + ' m (selisih ' + selisih.toFixed(1) + ' m). +100 Poin!';
         } else {
-            challengeFeedback.textContent = `✅ Mengenai sasaran lagi (${landingX.toFixed(1)} m)! Klik "Buat Misi Baru" untuk tantangan berikutnya.`;
+            challengeFeedback.textContent = '✅ Mengenai sasaran lagi (' + landingX.toFixed(1) + ' m)! Klik "Buat Misi Baru" untuk tantangan berikutnya.';
         }
     } else {
         challengeFeedback.className = 'challenge-feedback feedback-fail';
         const arah = landingX < targetDistance ? 'terlalu pendek' : 'terlalu jauh';
-        challengeFeedback.textContent = `❌ Meleset! Bola jatuh di ${landingX.toFixed(1)} m (${arah} ${selisih.toFixed(1)} m dari target ${targetDistance} m). Coba lagi!`;
+        challengeFeedback.textContent = '❌ Meleset! Bola jatuh di ' + landingX.toFixed(1) + ' m (' + arah + ' ' + selisih.toFixed(1) + ' m dari target ' + targetDistance + ' m). Coba lagi!';
     }
 }
 
@@ -173,16 +163,14 @@ function checkMissionResult(landingX) {
 function drawScene(ballX, ballY) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 1. Gambar Grid & Skala Meter
     drawGrid();
 
-    // 2. Gambar Target Sasaran Misi (Jika aktif)
     if (targetDistance !== null) {
         drawTarget(targetDistance);
     }
 
-    // 3. Gambar Semua Jejak Lintasan Sebelumnya
-    trajectories.forEach(traj => {
+    for (let i = 0; i < trajectories.length; i++) {
+        const traj = trajectories[i];
         drawTrail(traj.points, traj.color);
         if (traj.peakY > 0.5) {
             const px = originX + traj.peakX * scale;
@@ -192,20 +180,17 @@ function drawScene(ballX, ballY) {
             ctx.arc(px, py, 4, 0, Math.PI * 2);
             ctx.fill();
             ctx.font = '11px Segoe UI';
-            ctx.fillText(`Puncak (${traj.peakY.toFixed(1)}m)`, px - 30, py - 8);
+            ctx.fillText('Puncak (' + traj.peakY.toFixed(1) + 'm)', px - 30, py - 8);
         }
-    });
+    }
 
-    // 4. Gambar Jejak Lintasan Aktif
     if (currentTrail.length > 0) {
         const activeColor = colors[(shotCount - 1) % colors.length];
         drawTrail(currentTrail, activeColor);
     }
 
-    // 5. Gambar Meriam
     drawCannon();
 
-    // 6. Gambar Bola Proyektil
     const screenX = originX + (ballX * scale);
     const screenY = originY - (ballY * scale);
 
@@ -222,7 +207,6 @@ function drawTarget(distMeters) {
     const tx = originX + distMeters * scale;
     const ty = originY;
 
-    // Papan target merah-putih di tanah
     ctx.fillStyle = '#dc2626';
     ctx.fillRect(tx - 10, ty - 5, 20, 10);
     ctx.fillStyle = '#ffffff';
@@ -230,7 +214,6 @@ function drawTarget(distMeters) {
     ctx.fillStyle = '#dc2626';
     ctx.fillRect(tx - 2, ty - 5, 4, 10);
 
-    // Bendera penanda di atas target
     ctx.strokeStyle = '#dc2626';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -241,7 +224,7 @@ function drawTarget(distMeters) {
     ctx.fillStyle = '#dc2626';
     ctx.font = 'bold 11px Segoe UI';
     ctx.textAlign = 'center';
-    ctx.fillText(`Target (${distMeters}m)`, tx, ty - 36);
+    ctx.fillText('Target (' + distMeters + 'm)', tx, ty - 36);
     ctx.textAlign = 'left';
 }
 
@@ -258,7 +241,7 @@ function drawGrid() {
         ctx.moveTo(x, 10);
         ctx.lineTo(x, originY);
         ctx.stroke();
-        if (m > 0) ctx.fillText(`${m}m`, x - 10, originY + 15);
+        if (m > 0) ctx.fillText(m + 'm', x - 10, originY + 15);
     }
 
     for (let m = 10; m <= 80; m += 10) {
@@ -268,7 +251,7 @@ function drawGrid() {
         ctx.moveTo(originX, y);
         ctx.lineTo(canvas.width - 10, y);
         ctx.stroke();
-        ctx.fillText(`${m}m`, 12, y + 3);
+        ctx.fillText(m + 'm', 12, y + 3);
     }
 
     ctx.strokeStyle = '#334155';
@@ -283,14 +266,14 @@ function drawTrail(points, color) {
     if (points.length < 2) return;
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
-    ctx.setLineDash(new Array(6, 4)); // Garis putus-putus aman tanpa kurung siku
+    ctx.setLineDash(new Array(6, 4));
     ctx.beginPath();
-    points.forEach((pt, index) => {
-        const sx = originX + pt.x * scale;
-        const sy = originY - pt.y * scale;
-        if (index === 0) ctx.moveTo(sx, sy);
+    for (let i = 0; i < points.length; i++) {
+        const sx = originX + points[i].x * scale;
+        const sy = originY - points[i].y * scale;
+        if (i === 0) ctx.moveTo(sx, sy);
         else ctx.lineTo(sx, sy);
-    });
+    }
     ctx.stroke();
     ctx.setLineDash([]);
 }
@@ -313,7 +296,7 @@ function drawCannon() {
 
 function addHistoryRow(no, ang, vel, grav, ymax, xmax) {
     const row = document.createElement('tr');
-    row.innerHTML = 
+    row.innerHTML =
         '<td>' + no + '</td>' +
         '<td>' + ang + '°</td>' +
         '<td>' + vel + ' m/s</td>' +
@@ -330,51 +313,43 @@ inputAngle.addEventListener('input', updatePreview);
 inputV0.addEventListener('input', updatePreview);
 inputG.addEventListener('change', updatePreview);
 btnNewMission.addEventListener('click', createNewMission);
-
 btnFire.addEventListener('click', () => {
-    t = 0;
-    currentTrail = [];
-    isRunning = true;
-    isPaused = false;
-    btnPause.textContent = 'Jeda';
-    shotCount++;
-    animate();
+t = 0;
+currentTrail = [];
+isRunning = true;
+isPaused = false;
+btnPause.textContent = 'Jeda';
+shotCount++;
+animate();
 });
-
 btnPause.addEventListener('click', () => {
-    if (!isRunning) return;
-    isPaused = !isPaused;
-    btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
-    if (!isPaused) animate();
+if (!isRunning) return;
+isPaused = !isPaused;
+btnPause.textContent = isPaused ? 'Lanjut' : 'Jeda';
+if (!isPaused) animate();
 });
-
 btnClear.addEventListener('click', () => {
-    isRunning = false;
-    isPaused = false;
-    t = 0;
-    trajectories = [];
-    currentTrail = [];
-    outT.textContent = '0.00 s';
-    outPos.textContent = '0.0m, 0.0m';
-    drawScene(0, 0);
+isRunning = false;
+isPaused = false;
+t = 0;
+trajectories = [];
+currentTrail = [];
+outT.textContent = '0.00 s';
+outPos.textContent = '0.0m, 0.0m';
+drawScene(0, 0);
 });
-
 btnClearTable.addEventListener('click', () => {
-    historyBody.innerHTML = '';
-    shotCount = 0;
+historyBody.innerHTML = '';
+shotCount = 0;
 });
-
 btnFormula.addEventListener('click', () => {
-    if (formulaPanel.style.display === 'none') {
-        formulaPanel.style.display = 'block';
-        btnFormula.textContent = 'Sembunyikan Rumus';
-    } else {
-        formulaPanel.style.display = 'none';
-        btnFormula.textContent = 'Lihat Rumus';
-    }
+if (formulaPanel.style.display === 'none') {
+formulaPanel.style.display = 'block';
+btnFormula.textContent = 'Sembunyikan Rumus';
+} else {
+formulaPanel.style.display = 'none';
+btnFormula.textContent = 'Lihat Rumus';
+}
 });
-
 // Tampilkan kondisi awal
 updatePreview();
-
-
