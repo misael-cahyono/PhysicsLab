@@ -1,0 +1,16 @@
+{
+  "name": "PhysLab 10 - Laboratorium Fisika Virtual",
+  "short_name": "PhysLab 10",
+  "description": "Simulasi praktikum fisika interaktif SMA Kelas 10 yang dapat digunakan secara offline.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://flaticon.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
