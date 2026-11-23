@@ -150,21 +150,16 @@
     </footer>
 
     <!-- Script tombol ganti tema -->
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
+    <script src="lab-tools.js"></script>
+<script>
+    // Daftarkan Service Worker agar website bisa di-install & berjalan offline
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('PhysLab 10 siap digunakan secara offline!'))
+            .catch((err) => console.log('Gagal mendaftarkan Service Worker:', err));
+    }
+</script>
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = htmlElement.getAttribute('data-theme');
-            if (currentTheme === 'light') {
-                htmlElement.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️ Mode Terang';
-            } else {
-                htmlElement.setAttribute('data-theme', 'light');
-                themeToggle.textContent = '🌙 Mode Gelap';
-            }
-        });
-    </script>
 
 </body>
 </html>
