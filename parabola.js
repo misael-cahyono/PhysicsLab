@@ -139,15 +139,18 @@ function drawScene(ballX, ballY) {
 
 function drawTrail(points, color) {
     if (points.length < 2) return;
-    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.85;
     ctx.beginPath();
     for (let i = 0; i < points.length; i++) {
         const sx = originX + points[i].x * scale, sy = originY - points[i].y * scale;
         if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
     }
-    ctx.stroke(); ctx.globalAlpha = 0.85;
+    ctx.stroke();
     ctx.globalAlpha = 1.0;
 }
+
 
 inputAngle.addEventListener('input', updatePreview);
 inputV0.addEventListener('input', updatePreview);
