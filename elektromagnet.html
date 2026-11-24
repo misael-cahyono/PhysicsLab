@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Virtual Elektromagnet - PhysLab 10</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .status-badge {
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .status-aktif {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+        .status-mati {
+            background-color: rgba(148, 163, 184, 0.15);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+        }
+    </style>
+</head>
+<body class="futuristic-home">
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">⚛️</span>
+                <h1>PhysLab <span>10</span></h1>
+            </div>
+            <nav style="flex-wrap: wrap;">
+                <a href="index.html">Beranda</a>
+                <a href="parabola.html">Parabola</a>
+                <a href="pegas.html">Pegas</a>
+                <a href="bidang-miring.html">Bidang Miring</a>
+                <a href="bandul.html">Bandul</a>
+                <a href="energi.html">Energi</a>
+                <a href="archimedes.html">Archimedes</a>
+                <a href="listrik.html">Listrik</a>
+                <a href="elektromagnet.html" class="active">Elektromagnet</a>
+                <a href="faraday.html">Faraday</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="margin-bottom: 1.5rem;">
+            <h2>8. Lab Virtual Elektromagnet (Solenoida & Medan Magnet)</h2>
+            <p style="color: #94a3b8;">Uji bagaimana lilitan kawat berarus listrik mengubah paku besi menjadi magnet kuat yang mampu mengangkat klip logam.</p>
+        </div>
+
+        <div class="sim-layout">
+            
+            <aside class="control-panel">
+                <h3 style="margin-bottom: 1rem;">Variabel Elektromagnet</h3>
+
+                <div class="control-group">
+                    <label>
+                        <span>Jumlah Lilitan Kawat (N)</span>
+                        <span id="val-n" style="color: #38bdf8;">50 Lilitan</span>
+                    </label>
+                    <input type="range" id="input-n" min="10" max="150" step="10" value="50">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <span>Kuat Arus Baterai (I)</span>
+                        <span id="val-i" style="color: #38bdf8;">2.0 A</span>
+                    </label>
+                    <input type="range" id="input-i" min="0" max="5" step="0.5" value="2.0">
+                </div>
+
+                <div class="control-group">
+                    <label for="input-core">Jenis Inti Kumparan</label>
+                    <select id="input-core">
+                        <option value="1">Udara / Sedotan Plastik (μ_r = 1)</option>
+                        <option value="4" selected>Paku Besi Lunak (μ_r = 4× Kuat)</option>
+                        <option value="6">Baja Silikon Khusus (μ_r = 6× Kuat)</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btn-reverse" class="btn-primary" style="flex: 2;">🔄 Balik Kutub Baterai</button>
+                    <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
+                </div>
+
+                <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
+                    <strong>Rumus Medan Magnet Solenoida:</strong><br>
+                    • Induksi Magnet: <code>B = μ_r · μ₀ · (N · I) / L</code><br>
+                    • Gaya Tarik Magnet: <code>F_tarik ∝ μ_r · N · I</code><br>
+                    <em>Kaidah Tangan Kanan menentukan letak kutub U dan S.</em>
+                </div>
+            </aside>
+
+            <section class="visual-panel">
+                
+                <div class="challenge-box">
+                    <div class="challenge-header">
+                        <h4>🎯 Misi Tantangan: Angkat Klip Target!</h4>
+                        <span id="total-score" class="score-badge">0 Poin</span>
+                    </div>
+                    <p id="challenge-desc" class="challenge-text">
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan tantangan jumlah klip logam yang harus diangkat!
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
+                    </div>
+                    <div id="challenge-feedback" class="challenge-feedback"></div>
+                </div>
+
+                <div id="status-box" class="status-badge status-aktif">
+                    Status: Elektromagnet Aktif — Mengangkat 8 Klip Logam
+                </div>
+
+                <canvas id="magnet-canvas" width="650" height="360"></canvas>
+
+                <div class="export-bar">
+                    <button class="btn-export" onclick="downloadCanvasImage('magnet-canvas', 'laporan-elektromagnet')">
+                        📷 Simpan Gambar Elektromagnet (.PNG)
+                    </button>
+                </div>
+
+                <div class="output-grid">
+                    <div class="output-item">
+                        <span>Medan Magnet (B)</span>
+                        <strong id="out-b" style="color: #38bdf8;">2.51 mT</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Gaya Tarik Relatif</span>
+                        <strong id="out-force">400 Satuan</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Klip Terangkat</span>
+                        <strong id="out-clips" style="color: #4ade80;">8 / 20 Klip</strong>
+                    </div>
+                    <div class="output-item">
+                        <span>Arah Kutub Paku</span>
+                        <strong id="out-pole">Kiri: U | Kanan: S</strong>
+                    </div>
+                </div>
+
+                <div class="explanation-box">
+                    <h4>💡 Analisis & Penjelasan Otomatis</h4>
+                    <div class="exp-section">
+                        <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
+                        <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
+                    </div>
+                    <div class="exp-section">
+                        <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
+                        <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <section class="lks-panel">
+            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Elektromagnet</h3>
+            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
+            <ul class="lks-list">
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 1 (Pengaruh Jumlah Lilitan):</strong> Atur arus <code>2.0 A</code> pada inti <strong>Paku Besi</strong>. Bandingkan jumlah klip yang terangkat saat lilitan <code>20</code> dengan saat lilitan <code>120</code>!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 2 (Pengaruh Inti Besi):</strong> Pada <code>80 lilitan</code> dan <code>3.0 A</code>, ubah jenis inti dari <strong>Paku Besi</strong> menjadi <strong>Udara / Sedotan Plastik</strong>. Amati betapa drastis penurunan medan magnetnya!</span>
+                </li>
+                <li>
+                    <input type="checkbox">
+                    <span><strong>Percobaan 3 (Kaidah Tangan Kanan):</strong> Klik tombol <strong>"🔄 Balik Kutub Baterai"</strong> dan perhatikan perubahan posisi kutub <strong>Utara (U)</strong> dan <strong>Selatan (S)</strong> pada ujung paku.</span>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>PhysLab 10 • Modul Kemagnetan & Elektromagnet</p>
+        </div>
+    </footer>
+
+    <script src="lab-tools.js"></script>
+    <script src="elektromagnet.js"></script>
+</body>
+</html>
