@@ -174,3 +174,39 @@ if (btnFormula) btnFormula.addEventListener('click', () => {
 });
 
 updatePreview();
+// =========================================
+// FITUR BARU: ANALISIS & PENJELASAN OTOMATIS
+// =========================================
+function updateParabolaExplanation() {
+    const expCalc = document.getElementById('exp-calc');
+    const expReason = document.getElementById('exp-reason');
+    if (!expCalc || !expReason) return;
+
+    const v0Val = parseFloat(inputV0.value);
+    const angleVal = parseFloat(inputAngle.value);
+    const gVal = parseFloat(inputG.value);
+    const rad = angleVal * (Math.PI / 180);
+
+    const tTotal = (2 * v0Val * Math.sin(rad)) / gVal;
+    const yMax = Math.pow(v0Val * Math.sin(rad), 2) / (2 * gVal);
+    const xMax = (Math.pow(v0Val, 2) * Math.sin(2 * rad)) / gVal;
+
+    expCalc.innerHTML =
+        '1. Tinggi Maksimum (Y_max) = <code>(v₀² · sin² ' + angleVal + '°) / (2 · ' + gVal + ') = ' + yMax.toFixed(2) + ' m</code><br>' +
+        '2. Jarak Terjauh (X_max) = <code>(v₀² · sin ' + (angleVal * 2) + '°) / ' + gVal + ' = ' + xMax.toFixed(2) + ' m</code><br>' +
+        '3. Waktu di Udara (t_total) = <code>(2 · ' + v0Val + ' · sin ' + angleVal + '°) / ' + gVal + ' = ' + tTotal.toFixed(2) + ' s</code>';
+
+    if (angleVal === 45) {
+        expReason.textContent = 'Sudut tembak 45° menghasilkan nilai sin(2θ) = sin(90°) = 1 (maksimum), sehingga keseimbangan antara kecepatan mendatar dan vertikal menghasilkan jarak jatuh terjauh.';
+    } else if (angleVal > 45) {
+        expReason.textContent = 'Karena sudut elevasi (' + angleVal + '°) lebih besar dari 45°, komponen kecepatan vertikal lebih dominan sehingga peluru melambung lebih tinggi (' + yMax.toFixed(1) + ' m) dan berada di udara lebih lama, namun jarak mendatarnya berkurang.';
+    } else {
+        expReason.textContent = 'Karena sudut elevasi (' + angleVal + '°) lebih kecil dari 45°, lintasan peluru cenderung mendatar dan rendah (' + yMax.toFixed(1) + ' m) sehingga peluru lebih cepat menyentuh tanah sebelum mencapai jarak optimal.';
+    }
+}
+
+inputV0.addEventListener('input', updateParabolaExplanation);
+inputAngle.addEventListener('input', updateParabolaExplanation);
+inputG.addEventListener('change', updateParabolaExplanation);
+btnReset.addEventListener('click', updateParabolaExplanation);
+updateParabolaExplanation();
