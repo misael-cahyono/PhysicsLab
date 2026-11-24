@@ -72,18 +72,15 @@ function updateSimulation() {
     if (!isSwitchOn) {
         statusBox.className = 'status-badge status-off';
         statusBox.textContent = 'Status: Saklar Terbuka (OFF) — Tidak Ada Arus Mengalir';
-        outSafe.textContent = 'Terputus (OFF)';
-        outSafe.style.color = '#94a3b8';
+        outSafe.textContent = 'Terputus (OFF)'; outSafe.style.color = '#94a3b8';
     } else if (isOverload) {
         statusBox.className = 'status-badge status-overload';
         statusBox.textContent = '⚠️ OVERLOAD! Arus > 2.5 A — Filamen Lampu Putus!';
-        outSafe.textContent = 'BAHAYA (Putus!)';
-        outSafe.style.color = '#f87171';
+        outSafe.textContent = 'BAHAYA (Putus!)'; outSafe.style.color = '#f87171';
     } else {
         statusBox.className = 'status-badge status-normal';
         statusBox.textContent = 'Status: Rangkaian Tertutup — Lampu Menyala Normal';
-        outSafe.textContent = 'Aman (< 2.5 A)';
-        outSafe.style.color = '#4ade80';
+        outSafe.textContent = 'Aman (< 2.5 A)'; outSafe.style.color = '#4ade80';
     }
 
     if (expCalc && expReason) {
@@ -109,7 +106,6 @@ function updateSimulation() {
     drawCircuit(I, P, isOverload);
     requestAnimationFrame(updateSimulation);
 }
-
 function drawCircuit(I, P, isOverload) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = '#334155';
@@ -135,13 +131,11 @@ function drawCircuit(I, P, isOverload) {
         }
     }
 
-    // Baterai
     ctx.fillStyle = '#1e293b'; ctx.fillRect(88, 160, 44, 60);
     ctx.fillStyle = '#f59e0b'; ctx.fillRect(88, 160, 44, 15);
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px Segoe UI'; ctx.textAlign = 'center';
     ctx.fillText('+', 110, 172); ctx.fillText(V + 'V', 110, 202); ctx.textAlign = 'left';
 
-    // Saklar
     const sy = circuitType === 'parallel' ? 300 : 290;
     ctx.fillStyle = '#ffffff'; ctx.fillRect(285, sy - 15, 60, 30);
     ctx.fillStyle = '#0f172a';
@@ -152,7 +146,6 @@ function drawCircuit(I, P, isOverload) {
     if (isSwitchOn) ctx.lineTo(340, sy); else ctx.lineTo(333, sy - 22);
     ctx.stroke();
 
-    // Titik Elektron
     if (isSwitchOn && !isOverload && I > 0) {
         ctx.fillStyle = '#2563eb';
         const topY = circuitType === 'parallel' ? 70 : 80;
@@ -212,22 +205,24 @@ if (btnCheckMission) {
     btnCheckMission.addEventListener('click', () => {
         if (targetI === null) return;
         if (Math.abs(currentI - targetI) <= 0.05 && currentI > 0) {
-challengeFeedback.className = 'challenge-feedback feedback-success';
-if (!missionSolved) {
-missionSolved = true;
-if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
-challengeFeedback.textContent = '🎉 TEPAT! Kuat arus ' + currentI.toFixed(2) + ' A sesuai target (+100 Poin)!';
-} else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
-} else {
-challengeFeedback.className = 'challenge-feedback feedback-fail';
-challengeFeedback.textContent = '❌ Belum pas! Kuat arus saat ini ' + currentI.toFixed(2) + ' A (Target: ' + targetI.toFixed(2) + ' A).';
+            challengeFeedback.className = 'challenge-feedback feedback-success';
+            if (!missionSolved) {
+                missionSolved = true;
+                if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
+                challengeFeedback.textContent = '🎉 TEPAT! Kuat arus ' + currentI.toFixed(2) + ' A sesuai target (+100 Poin)!';
+            } else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
+        } else {
+            challengeFeedback.className = 'challenge-feedback feedback-fail';
+            challengeFeedback.textContent = '❌ Belum pas! Kuat arus saat ini ' + currentI.toFixed(2) + ' A (Target: ' + targetI.toFixed(2) + ' A).';
+        }
+    });
 }
-});
-}
+
 if (btnFormula) {
-btnFormula.addEventListener('click', () => {
-formulaPanel.style.display = formulaPanel.style.display === 'none' ? 'block' : 'none';
-btnFormula.textContent = formulaPanel.style.display === 'none' ? 'Lihat Rumus' : 'Sembunyikan Rumus';
-});
+    btnFormula.addEventListener('click', () => {
+        formulaPanel.style.display = formulaPanel.style.display === 'none' ? 'block' : 'none';
+        btnFormula.textContent = formulaPanel.style.display === 'none' ? 'Lihat Rumus' : 'Sembunyikan Rumus';
+    });
 }
+
 updateSimulation();
