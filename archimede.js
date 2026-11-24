@@ -271,12 +271,14 @@ if (btnCheckMission) {
         }
     });
 }
+}
 
-   inputRhoObj.value = 600;
-   presetMaterial.value = 'custom';
-   inputVol.value = 0.05;
-   inputFluid.value = 1000;
- });
+btnReset.addEventListener('click', () => {
+    inputRhoObj.value = 600;
+    presetMaterial.value = 'custom';
+    inputVol.value = 0.05;
+    inputFluid.value = 1000;
+});
 
 if (btnFormula) {
 btnFormula.addEventListener('click', () => {
