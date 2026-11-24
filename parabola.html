@@ -1,83 +1,59 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulator Gerak Parabola - PhysLab 10</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-        .history-table th, .history-table td {
-            border: 1px solid var(--border-color);
-            padding: 0.6rem;
-            text-align: center;
-        }
-        .history-table th {
-            background-color: var(--formula-bg);
-            color: var(--accent);
-        }
-    </style>
 </head>
 <body class="futuristic-home">
 
-
-    <!-- Navigasi Atas Lengkap -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo">
                 <span class="logo-icon">⚛️</span>
                 <h1>PhysLab <span>10</span></h1>
             </div>
-         
-                       <nav style="flex-wrap: wrap;">
-             <a href="index.html">Beranda</a>
-             <a href="parabola.html" class="active">Parabola</a>
-             <a href="pegas.html">Pegas</a>
-             <a href="bidang-miring.html">Bidang Miring</a>
-             <a href="bandul.html">Bandul</a>
-             <a href="energi.html">Energi</a>
-             <a href="archimedes.html">Archimedes</a>
-             <a href="listrik.html">Listrik</a>
-             <a href="elektromagnet.html">Elektromagnet</a>
-             <a href="faraday.html">Faraday</a>
-         </nav>
-
-          
+            <nav style="flex-wrap: wrap;">
+                <a href="index.html">Beranda</a>
+                <a href="parabola.html" class="active">Parabola</a>
+                <a href="pegas.html">Pegas</a>
+                <a href="bidang-miring.html">Bidang Miring</a>
+                <a href="bandul.html">Bandul</a>
+                <a href="energi.html">Energi</a>
+                <a href="archimedes.html">Archimedes</a>
+                <a href="listrik.html">Listrik</a>
+                <a href="elektromagnet.html">Elektromagnet</a>
+                <a href="faraday.html">Faraday</a>
+            </nav>
         </div>
     </header>
 
-    <!-- Area Utama Simulasi -->
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
             <h2>1. Simulator Gerak Parabola (Kinematika 2D)</h2>
-            <p style="color: var(--text-secondary);">Atur sudut elevasi dan kecepatan awal proyektil untuk mengamati lintasan melengkung, tinggi puncak, dan jarak terjauhnya.</p>
+            <p style="color: #94a3b8;">Atur kecepatan awal, sudut tembakan, dan gravitasi planet untuk mengamati lintasan proyektil dan titik puncaknya.</p>
         </div>
 
         <div class="sim-layout">
             
-            <!-- PANEL KIRI: Kontrol Variabel -->
             <aside class="control-panel">
-                <h3 style="margin-bottom: 1rem;">Variabel Tembakan</h3>
-
-                <div class="control-group">
-                    <label>
-                        <span>Sudut Elevasi (θ)</span>
-                        <span id="val-angle" style="color: var(--accent);">45°</span>
-                    </label>
-                    <input type="range" id="input-angle" min="0" max="90" step="1" value="45">
-                </div>
+                <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
 
                 <div class="control-group">
                     <label>
                         <span>Kecepatan Awal (v₀)</span>
-                        <span id="val-v0" style="color: var(--accent);">25 m/s</span>
+                        <span id="val-v0" style="color: #38bdf8;">25 m/s</span>
                     </label>
-                    <input type="range" id="input-v0" min="5" max="40" step="1" value="25">
+                    <input type="range" id="input-v0" min="5" max="50" step="1" value="25">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <span>Sudut Elevasi (θ)</span>
+                        <span id="val-angle" style="color: #38bdf8;">45°</span>
+                    </label>
+                    <input type="range" id="input-angle" min="15" max="85" step="1" value="45">
                 </div>
 
                 <div class="control-group">
@@ -86,71 +62,56 @@
                         <option value="9.8" selected>Bumi (9,8 m/s²)</option>
                         <option value="1.6">Bulan (1,6 m/s²)</option>
                         <option value="3.7">Mars (3,7 m/s²)</option>
-                        <option value="10">Pembulatan Sekolah (10 m/s²)</option>
+                        <option value="24.8">Jupiter (24,8 m/s²)</option>
                     </select>
                 </div>
 
                 <div class="btn-group">
-                    <button id="btn-fire" class="btn-primary" style="flex: 2;">🚀 Tembak</button>
-                    <button id="btn-pause" class="btn-secondary" style="flex: 1;">Jeda</button>
+                    <button id="btn-fire" class="btn-primary" style="flex: 2;">🚀 Tembakkan</button>
+                    <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
                 </div>
 
                 <div class="btn-group">
-                    <button id="btn-clear" class="btn-secondary">Hapus Jejak</button>
                     <button id="btn-formula" class="btn-secondary">Lihat Rumus</button>
                 </div>
 
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
-                    <strong>Rumus Gerak Parabola:</strong><br>
-                    • Posisi X: <code>x = v₀ · cos(θ) · t</code><br>
-                    • Posisi Y: <code>y = v₀ · sin(θ) · t - ½gt²</code><br>
-                    • Tinggi Maks: <code>Y_max = (v₀² · sin²θ) / 2g</code><br>
-                    • Jarak Terjauh: <code>X_max = (v₀² · sin 2θ) / g</code>
+                    <strong>Rumus Kinematika 2D:</strong><br>
+                    • Waktu Total: <code>t_total = (2·v₀·sin θ) / g</code><br>
+                    • Tinggi Maks: <code>Y_max = (v₀²·sin² θ) / 2g</code><br>
+                    • Jarak Terjauh: <code>X_max = (v₀²·sin 2θ) / g</code>
                 </div>
             </aside>
 
-            <!-- PANEL KANAN: Misi Tantangan, Kanvas, Output & Tabel -->
             <section class="visual-panel">
                 
-                <!-- KOTAK MISI TANTANGAN (GAMIFIKASI) -->
                 <div class="challenge-box">
                     <div class="challenge-header">
                         <h4>🎯 Misi Tantangan: Tembak Sasaran!</h4>
                         <span id="total-score" class="score-badge">0 Poin</span>
                     </div>
                     <p id="challenge-desc" class="challenge-text">
-                        Klik tombol "Misi Baru" untuk memunculkan target sasaran di lapangan!
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan tantangan jarak sasaran tembak!
                     </p>
-                    <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
+                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
+                    </div>
                     <div id="challenge-feedback" class="challenge-feedback"></div>
                 </div>
 
-                <canvas id="parabola-canvas" width="650" height="380"></canvas>
+                <canvas id="parabola-canvas" width="650" height="360"></canvas>
 
-                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
                 <div class="export-bar">
                     <button class="btn-export" onclick="downloadCanvasImage('parabola-canvas', 'laporan-gerak-parabola')">
                         📷 Simpan Gambar Lintasan (.PNG)
                     </button>
                 </div>
 
-                <!-- Kartu Output Real-Time -->
                 <div class="output-grid">
-                                 <div class="explanation-box">
-                 <h4>💡 Analisis & Penjelasan Otomatis</h4>
-                 <div class="exp-section">
-                     <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
-                     <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
-                 </div>
-                 <div class="exp-section">
-                     <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
-                     <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
-                 </div>
-             </div>
-
                     <div class="output-item">
                         <span>Waktu di Udara (t)</span>
-                        <strong id="out-t">0.00 s</strong>
+                        <strong id="out-t">3.61 s</strong>
                     </div>
                     <div class="output-item">
                         <span>Posisi Saat Ini (x, y)</span>
@@ -158,66 +119,67 @@
                     </div>
                     <div class="output-item">
                         <span>Tinggi Maksimum (Y_max)</span>
-                        <strong id="out-ymax">0.00 m</strong>
+                        <strong id="out-ymax">15.94 m</strong>
                     </div>
                     <div class="output-item">
                         <span>Jarak Terjauh (X_max)</span>
-                        <strong id="out-xmax">0.00 m</strong>
+                        <strong id="out-xmax">63.78 m</strong>
                     </div>
                 </div>
 
-                <!-- Tabel Riwayat Percobaan -->
-                <div style="margin-top: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <!-- KOTAK ANALISIS & PENJELASAN OTOMATIS -->
+                <div class="explanation-box">
+                    <h4>💡 Analisis & Penjelasan Otomatis</h4>
+                    <div class="exp-section">
+                        <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
+                        <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
+                    </div>
+                    <div class="exp-section">
+                        <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
+                        <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
+                    </div>
+                </div>
+
+                <div class="history-box">
+                    <div class="history-header">
                         <h4>📋 Riwayat Hasil Percobaan</h4>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-export" onclick="exportTableToCSV('.history-table', 'data-gerak-parabola')">
-                                📊 Unduh Excel (.CSV)
-                            </button>
-                            <button id="btn-clear-table" class="btn-secondary" style="flex: none; padding: 0.4rem 0.7rem; font-size: 0.85rem;">Kosongkan</button>
+                            <button class="btn-export" onclick="exportTableToCSV('.history-table', 'data-parabola')">📊 Unduh Excel (.CSV)</button>
+                            <button id="btn-clear-history" class="btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.8rem;">Hapus</button>
                         </div>
                     </div>
-                    <div style="overflow-x: auto;">
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Sudut (θ)</th>
-                                    <th>Kecepatan (v₀)</th>
-                                    <th>Gravitasi (g)</th>
-                                    <th>Tinggi Maks</th>
-                                    <th>Jarak Terjauh</th>
-                                </tr>
-                            </thead>
-                            <tbody id="history-body"></tbody>
-                        </table>
-                    </div>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>v₀ (m/s)</th>
+                                <th>Sudut (θ)</th>
+                                <th>Y_max (m)</th>
+                                <th>X_max (m)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body"></tbody>
+                    </table>
                 </div>
-
             </section>
 
         </div>
 
-        <!-- PANEL PANDUAN PRAKTIKUM (LKS) -->
         <section class="lks-panel">
-            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Mandiri</h3>
-            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai untuk membuktikan konsep Gerak Parabola:</p>
+            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Gerak Parabola</h3>
+            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
             <ul class="lks-list">
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 1 (Sudut Jarak Terjauh):</strong> Atur kecepatan awal <code>25 m/s</code> di gravitasi Bumi, lalu tembakkan proyektil pada sudut <code>30°</code>, <code>45°</code>, dan <code>60°</code> tanpa menghapus jejak. Amati sudut mana yang menghasilkan jarak terjauh!</span>
+                    <span><strong>Percobaan 1 (Sudut Jarak Terjauh):</strong> Atur kecepatan awal <code>25 m/s</code> di Bumi. Tembakkan pada sudut <code>30°</code>, <code>45°</code>, dan <code>60°</code>. Buktikan sudut mana yang menghasilkan <strong>Jarak Terjauh (X_max)</strong> paling besar!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 2 (Sudut Berkomplemen):</strong> Bandingkan hasil jarak jatuh antara sudut <code>30°</code> dan <code>60°</code> pada tabel riwayat. Apakah jarak jatuhnya sama persis?</span>
+                    <span><strong>Percobaan 2 (Sudut Saling Berkomplemen):</strong> Bandingkan nilai <strong>X_max</strong> antara sudut <code>30°</code> dan <code>60°</code> pada kecepatan yang sama. Amati kesamaan jarak jatuhnya!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 3 (Pengaruh Gravitasi):</strong> Atur sudut <code>45°</code> dan kecepatan <code>20 m/s</code>, lalu ubah gravitasi dari <strong>Bumi</strong> ke <strong>Bulan</strong>. Catat berapa kali lipat lebih jauh bola melayang di Bulan.</span>
-                </li>
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik tombol <strong>"Buat Misi Baru"</strong> di atas, hitung sudut yang tepat dengan rumus <code>X_max</code>, dan kenai target sasaran untuk mendapatkan +100 Poin!</span>
+                    <span><strong>Percobaan 3 (Gravitasi Bulan):</strong> Ubah gravitasi menjadi <strong>Bulan (1,6 m/s²)</strong> dan tembakkan kembali. Bandingkan tinggi puncak dan jarak jatuhnya dengan di Bumi!</span>
                 </li>
             </ul>
         </section>
