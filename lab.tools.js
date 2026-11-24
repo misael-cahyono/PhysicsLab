@@ -1,24 +1,3 @@
-const htmlElement = document.documentElement;
-const themeToggleBtn = document.getElementById('theme-toggle');
-
-function applyTheme(theme) {
-    htmlElement.setAttribute('data-theme', theme);
-    localStorage.setItem('physlab-theme', theme);
-   
-    }
-}
-
-const savedTheme = localStorage.getItem('physlab-theme') || 'light';
-applyTheme(savedTheme);
-
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', function() {
-        const currentTheme = htmlElement.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-        applyTheme(nextTheme);
-    });
-}
-
 function downloadCanvasImage(canvasId, filename) {
     const targetCanvas = document.getElementById(canvasId);
     if (!targetCanvas) return;
@@ -35,7 +14,12 @@ function downloadCanvasImage(canvasId, filename) {
     const link = document.createElement('a');
     link.download = filename + '.png';
     link.href = tempCanvas.toDataURL('image/png');
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+
+    // Tampilkan pesan konfirmasi agar pengguna tahu gambar berhasil diunduh
+    alert('✅ Gambar percobaan berhasil disimpan sebagai "' + filename + '.png" di folder Downloads perangkatmu!');
 }
 
 function exportTableToCSV(tableSelector, filename) {
@@ -60,7 +44,11 @@ function exportTableToCSV(tableSelector, filename) {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = filename + '.csv';
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+
+    alert('✅ Tabel data berhasil diunduh sebagai "' + filename + '.csv" (bisa dibuka di Excel)!');
 }
 
 function updateChallengeScore(pointsToAdd) {
