@@ -4,13 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhysLab 10 - Simulasi Laboratorium Fisika Virtual SMA Kelas 10</title>
-    <meta name="description" content="Platform simulasi laboratorium fisika virtual interaktif dan gratis untuk siswa SMA kelas 10. Pelajari Gerak Parabola, Hukum Hooke, Bidang Miring, Ayunan Bandul, dan Kekekalan Energi Mekanik secara visual dan offline.">
-    <meta name="keywords" content="physlab 10, simulasi fisika, laboratorium fisika virtual, praktikum fisika online, fisika sma kelas 10, gerak parabola, hukum hooke, bidang miring dan gaya gesek, ayunan bandul sederhana, hukum kekekalan energi mekanik, belajar fisika interaktif">
+    <meta name="description" content="Platform simulasi laboratorium fisika virtual interaktif untuk SMA kelas 10: Gerak Parabola, Hukum Hooke, Bidang Miring, Ayunan Bandul, Kekekalan Energi, dan Hukum Archimedes.">
+    <meta name="keywords" content="physlab 10, simulasi fisika, laboratorium fisika virtual, praktikum fisika online, fisika sma kelas 10, gerak parabola, hukum hooke, bidang miring, ayunan bandul, kekekalan energi, hukum archimedes">
     <meta name="author" content="Siswa SMA Kelas 10 - PhysLab 10">
 
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
+    <style>
+        /* Hiasan Beranda: Stats Bar, Peringkat Skor & Panduan */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .stat-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .stat-box strong {
+            display: block;
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+        .stat-box span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .rank-banner {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+        }
+        .rank-badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .step-item {
+            background-color: var(--formula-bg);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .step-item strong {
+            display: block;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        .step-item p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 
@@ -28,27 +98,74 @@
                 <a href="bidang-miring.html">Bidang Miring</a>
                 <a href="bandul.html">Bandul</a>
                 <a href="energi.html">Energi</a>
+                <a href="archimedes.html">Archimedes</a>
             </nav>
         </div>
     </header>
 
-    <!-- Bagian Utama (Hero dengan Gambar + Daftar 5 Modul) -->
+    <!-- Bagian Utama -->
     <main class="container">
         <section class="hero">
             <h2>Laboratorium Fisika Virtual SMA Kelas 10</h2>
-            <p>Pelajari 5 konsep utama fisika secara visual dan interaktif. Ubah variabel percobaan sesukamu, amati simulasinya secara langsung, dan catat hasil perhitungannya—100% tanpa koneksi internet.</p>
+            <p>Pelajari 6 konsep utama fisika secara visual dan interaktif. Ubah variabel percobaan sesukamu, amati simulasinya secara langsung, dan catat hasil perhitungannya—100% tanpa koneksi internet.</p>
             
             <!-- Gambar Ilustrasi Utama -->
             <div style="margin-top: 1.5rem;">
                 <img src="https://i.pinimg.com/1200x/c7/a9/e2/c7a9e2c4c2c4e226f6e1467e02608d36.jpg" 
                      alt="Ilustrasi Laboratorium Fisika PhysLab 10" 
-                     style="width: 100%; max-width: 720px; max-height: 320px; object-fit: cover; border-radius: 14px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); border: 2px solid var(--border-color);">
- 
-                
+                     style="width: 100%; max-width: 720px; max-height: 300px; object-fit: cover; border-radius: 14px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); border: 2px solid var(--border-color);">
             </div>
         </section>
 
-        <!-- Daftar Kartu Modul Praktikum -->
+        <!-- HIASAN 1: Baris Statistik Fitur -->
+        <section class="stats-bar">
+            <div class="stat-box">
+                <strong>🧪 6 Modul</strong>
+                <span>Eksperimen Fisika Kelas 10</span>
+            </div>
+            <div class="stat-box">
+                <strong>🎯 Misi & Skor</strong>
+                <span>Tantangan Interaktif di Tiap Lab</span>
+            </div>
+            <div class="stat-box">
+                <strong>📊 Ekspor Data</strong>
+                <span>Simpan Grafik PNG & Tabel Excel</span>
+            </div>
+            <div class="stat-box">
+                <strong>📴 100% Offline</strong>
+                <span>Bisa Dibuka Tanpa Kuota/Wi-Fi</span>
+            </div>
+        </section>
+
+        <!-- HIASAN 2: Banner Peringkat Skor Peneliti -->
+        <section class="rank-banner">
+            <div>
+                <h3 style="margin: 0; font-size: 1.15rem;">🏆 Pencapaian Eksperimen Kamu</h3>
+                <p style="margin: 0.2rem 0 0 0; font-size: 0.9rem; opacity: 0.9;">Selesaikan Misi Tantangan di setiap laboratorium untuk menaikkan peringkatmu!</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                <span id="rank-title" class="rank-badge">🔬 Peneliti Pemula</span>
+                <span id="home-score" class="rank-badge" style="background-color: #ffffff; color: #1d4ed8;">0 Poin</span>
+            </div>
+        </section>
+
+        <!-- HIASAN 3: Panduan Singkat 3 Langkah -->
+        <section class="steps-grid">
+            <div class="step-item">
+                <strong>1. Pilih Ruang Lab</strong>
+                <p>Klik salah satu dari 6 kartu praktikum fisika di bawah ini sesuai materi belajarmu.</p>
+            </div>
+            <div class="step-item">
+                <strong>2. Atur Variabel & Misi</strong>
+                <p>Geser slider input untuk melihat perubahan visual, lalu taklukkan Misi Tantangan (+100 Poin).</p>
+            </div>
+            <div class="step-item">
+                <strong>3. Unduh Laporan Praktikum</strong>
+                <p>Gunakan tombol Simpan Gambar (.PNG) atau Unduh Excel (.CSV) untuk tugas sekolahmu.</p>
+            </div>
+        </section>
+
+        <!-- Daftar 6 Kartu Modul Praktikum (Grid Simetris 3x2) -->
         <section class="modules-grid">
             
             <!-- Kartu Modul 1: Gerak Parabola -->
@@ -58,7 +175,6 @@
                     <h3>1. Simulator Gerak Parabola</h3>
                     <p>Amati lintasan proyektil berdasarkan sudut tembakan, kecepatan awal, dan percepatan gravitasi planet yang berbeda.</p>
                 </div>
-                
                 <div>
                     <div class="formula-box">
                         <strong>Rumus Utama:</strong><br>
@@ -76,7 +192,6 @@
                     <h3>2. Lab Virtual Hukum Hooke</h3>
                     <p>Uji tingkat kekakuan pegas dengan berbagai massa beban, ukur pertambahan panjangnya, serta amati getaran harmoniknya.</p>
                 </div>
-                
                 <div>
                     <div class="formula-box">
                         <strong>Rumus Utama:</strong><br>
@@ -94,7 +209,6 @@
                     <h3>3. Bidang Miring & Gaya Gesek</h3>
                     <p>Uji kapan balok mulai meluncur di atas papan miring dengan mengatur sudut kemiringan, massa benda, dan kekasaran permukaan.</p>
                 </div>
-                
                 <div>
                     <div class="formula-box">
                         <strong>Rumus Utama:</strong><br>
@@ -112,52 +226,34 @@
                     <h3>4. Ayunan Bandul Sederhana</h3>
                     <p>Buktikan pengaruh panjang tali dan gravitasi planet terhadap kecepatan ayunan bandul lengkap dengan stopwatch praktikum.</p>
                 </div>
-                
                 <div>
                     <div class="formula-box">
                         <strong>Rumus Utama:</strong><br>
                         <code>T = 2π · √(L / g)</code><br>
                         <code>f = 1 / T</code>
                     </div>
-                    <a href="bandul.html" class="btn-primary">Mulai Eksperimen →</a>
-                </div>
-            </article>
-
-            <!-- Kartu Modul 5: Kekekalan Energi Mekanik -->
-            <article class="card">
-                <div>
-                    <div class="card-badge">Usaha & Energi</div>
-                    <h3>5. Kekekalan Energi Mekanik</h3>
-                    <p>Amati perubahan Energi Potensial menjadi Energi Kinetik saat kereta meluncur melewati bukit dan lembah lintasan.</p>
-                </div>
-                
-                <div>
-                    <div class="formula-box">
-                        <strong>Rumus Utama:</strong><br>
-                        <code>EM = EP + EK</code><br>
-                        <code>m·g·h + ½·m·v² = Konstan</code>
-                    </div>
-                    <a href="energi.html" class="btn-primary">Mulai Eksperimen →</a>
-                </div>
-            </article>
-
-        </section>
-    </main>
-
-    <!-- Bagian Kaki Halaman (Footer) -->
-    <footer>
-        <div class="container">
-            <p>PhysLab 10 • Portal Praktikum Fisika SMA Kelas 10 • Berjalan 100% Offline</p>
-        </div>
     </footer>
 
     <script src="lab-tools.js"></script>
     <script>
+        // Menampilkan skor & peringkat otomatis di beranda
+        document.addEventListener('DOMContentLoaded', function() {
+            const score = parseInt(localStorage.getItem('physlab-score') || '0');
+            const homeScore = document.getElementById('home-score');
+            const rankTitle = document.getElementById('rank-title');
+            if (homeScore) homeScore.textContent = score + ' Poin';
+            if (rankTitle) {
+                if (score >= 500) rankTitle.textContent = '👑 Master Fisika';
+                else if (score >= 200) rankTitle.textContent = '🎓 Asisten Laboratorium';
+                else rankTitle.textContent = '🔬 Peneliti Pemula';
+            }
+        });
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
                 .catch(function(err) { console.log(err); });
         }
     </script>
 
-</body>
+     </body>
 </html>
