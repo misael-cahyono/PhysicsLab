@@ -1,30 +1,12 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Ayunan Bandul Sederhana - PhysLab 10</title>
+    <title>Ayunan Bandul Sederhana - PhysLab 10</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .stopwatch-box {
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1.2rem;
-            text-align: center;
-        }
-        .stopwatch-display {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin: 0.4rem 0;
-        }
-    </style>
 </head>
 <body class="futuristic-home">
-
 
     <header class="navbar">
         <div class="container nav-content">
@@ -32,7 +14,7 @@
                 <span class="logo-icon">⚛️</span>
                 <h1>PhysLab <span>10</span></h1>
             </div>
-            <nav>
+            <nav style="flex-wrap: wrap;">
                 <a href="index.html">Beranda</a>
                 <a href="parabola.html">Parabola</a>
                 <a href="pegas.html">Pegas</a>
@@ -40,47 +22,50 @@
                 <a href="bandul.html" class="active">Bandul</a>
                 <a href="energi.html">Energi</a>
                 <a href="archimedes.html">Archimedes</a>
+                <a href="listrik.html">Listrik</a>
+                <a href="elektromagnet.html">Elektromagnet</a>
+                <a href="faraday.html">Faraday</a>
             </nav>
         </div>
     </header>
 
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
-            <h2>4. Lab Virtual Ayunan Bandul Sederhana</h2>
-            <p style="color: var(--text-secondary);">Uji pengaruh panjang tali, massa beban, dan gravitasi planet terhadap periode ayunan bandul harmonik sederhana.</p>
+            <h2>4. Simulator Ayunan Bandul Sederhana (Getaran Harmonik)</h2>
+            <p style="color: #94a3b8;">Uji pengaruh panjang tali, massa bandul, dan gravitasi planet terhadap periode dan frekuensi ayunan.</p>
         </div>
 
         <div class="sim-layout">
             
             <aside class="control-panel">
-                <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
+                <h3 style="margin-bottom: 1rem;">Variabel Bandul</h3>
 
                 <div class="control-group">
                     <label>
                         <span>Panjang Tali (L)</span>
-                        <span id="val-l" style="color: var(--accent);">1.00 m</span>
+                        <span id="val-l" style="color: #38bdf8;">1.00 m</span>
                     </label>
-                    <input type="range" id="input-l" min="0.2" max="2.0" step="0.05" value="1.0">
+                    <input type="range" id="input-l" min="0.25" max="2.50" step="0.05" value="1.00">
                 </div>
 
                 <div class="control-group">
                     <label>
-                        <span>Massa Bola Bandul (m)</span>
-                        <span id="val-m" style="color: var(--accent);">1.0 kg</span>
+                        <span>Massa Bandul (m)</span>
+                        <span id="val-m" style="color: #38bdf8;">2.0 kg</span>
                     </label>
-                    <input type="range" id="input-m" min="0.5" max="5.0" step="0.5" value="1.0">
+                    <input type="range" id="input-m" min="0.5" max="10.0" step="0.5" value="2.0">
                 </div>
 
                 <div class="control-group">
                     <label>
                         <span>Sudut Simpangan Awal (θ₀)</span>
-                        <span id="val-angle" style="color: var(--accent);">20°</span>
+                        <span id="val-angle" style="color: #38bdf8;">25°</span>
                     </label>
-                    <input type="range" id="input-angle" min="5" max="35" step="1" value="20">
+                    <input type="range" id="input-angle" min="5" max="45" step="5" value="25">
                 </div>
 
                 <div class="control-group">
-                    <label for="input-g">Percepatan Gravitasi (g)</label>
+                    <label for="input-g">Gravitasi Planet (g)</label>
                     <select id="input-g">
                         <option value="9.8" selected>Bumi (9,8 m/s²)</option>
                         <option value="1.6">Bulan (1,6 m/s²)</option>
@@ -94,13 +79,13 @@
                     <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
                 </div>
 
-                <!-- Stopwatch Digital Praktikum -->
+                <!-- Stopwatch Praktikum -->
                 <div class="stopwatch-box">
-                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">⏱️ Stopwatch Praktikum (Ukur 10 Ayunan)</span>
-                    <div id="sw-display" class="stopwatch-display">00.00 s</div>
+                    <strong style="display: block; font-size: 0.85rem; color: #94a3b8;">⏱️ Stopwatch Praktikum</strong>
+                    <div id="sw-display" class="stopwatch-time">00.00 s</div>
                     <div class="btn-group" style="margin-top: 0.5rem;">
-                        <button id="sw-start" class="btn-primary" style="padding: 0.45rem; font-size: 0.85rem;">Mulai / Stop</button>
-                        <button id="sw-reset" class="btn-secondary" style="padding: 0.45rem; font-size: 0.85rem;">Nolkan</button>
+                        <button id="btn-sw-start" class="btn-secondary" style="padding: 0.35rem; font-size: 0.8rem;">Mulai / Berhenti</button>
+                        <button id="btn-sw-reset" class="btn-secondary" style="padding: 0.35rem; font-size: 0.8rem;">Nolkan</button>
                     </div>
                 </div>
 
@@ -109,17 +94,15 @@
                 </div>
 
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
-                    <strong>Rumus Bandul Sederhana:</strong><br>
-                    • Periode Ayunan: <code>T = 2π · √(L / g)</code><br>
+                    <strong>Rumus Ayunan Bandul:</strong><br>
+                    • Periode: <code>T = 2π · √(L / g)</code><br>
                     • Frekuensi: <code>f = 1 / T</code><br>
-                    • Menghitung Gravitasi: <code>g = 4π² · L / T²</code><br>
-                    <em>Catatan: Massa (m) tidak memengaruhi T.</em>
+                    <em>Massa bandul (m) tidak memengaruhi periode ayunan.</em>
                 </div>
             </aside>
 
             <section class="visual-panel">
                 
-                <!-- KOTAK MISI TANTANGAN -->
                 <div class="challenge-box">
                     <div class="challenge-header">
                         <h4>🎯 Misi Tantangan: Kalibrasi Jam Bandul!</h4>
@@ -135,9 +118,8 @@
                     <div id="challenge-feedback" class="challenge-feedback"></div>
                 </div>
 
-                <canvas id="pendulum-canvas" width="650" height="400"></canvas>
+                <canvas id="pendulum-canvas" width="650" height="360"></canvas>
 
-                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
                 <div class="export-bar">
                     <button class="btn-export" onclick="downloadCanvasImage('pendulum-canvas', 'laporan-ayunan-bandul')">
                         📷 Simpan Gambar Bandul (.PNG)
@@ -147,45 +129,53 @@
                 <div class="output-grid">
                     <div class="output-item">
                         <span>Periode Ayunan (T)</span>
-                        <strong id="out-t">2.01 s</strong>
+                        <strong id="out-period" style="color: #38bdf8;">2.01 s</strong>
                     </div>
                     <div class="output-item">
                         <span>Frekuensi (f)</span>
-                        <strong id="out-f">0.50 Hz</strong>
+                        <strong id="out-freq" style="color: #4ade80;">0.50 Hz</strong>
                     </div>
                     <div class="output-item">
-                        <span>Sudut Saat Ini (θ)</span>
-                        <strong id="out-theta">20.0°</strong>
+                        <span>Jumlah Ayunan Penuh</span>
+                        <strong id="out-swings">0 Kali</strong>
                     </div>
                     <div class="output-item">
-                        <span>Penghitung Ayunan</span>
-                        <strong id="out-count">0 Kali</strong>
+                        <span>Kecepatan Sudut (ω)</span>
+                        <strong id="out-omega">3.13 rad/s</strong>
+                    </div>
+                </div>
+
+                <!-- KOTAK ANALISIS & PENJELASAN OTOMATIS -->
+                <div class="explanation-box">
+                    <h4>💡 Analisis & Penjelasan Otomatis</h4>
+                    <div class="exp-section">
+                        <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
+                        <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
+                    </div>
+                    <div class="exp-section">
+                        <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
+                        <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
                     </div>
                 </div>
             </section>
 
         </div>
 
-        <!-- PANEL PANDUAN LKS -->
         <section class="lks-panel">
             <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Ayunan Bandul</h3>
             <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
             <ul class="lks-list">
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 1 (Pengaruh Massa Beban):</strong> Atur panjang tali <code>1.00 m</code> di gravitasi Bumi. Ubah massa bola bandul dari <code>0.5 kg</code> menjadi <code>5.0 kg</code>. Amati apakah nilai <strong>Periode Ayunan (T)</strong> berubah!</span>
+                    <span><strong>Percobaan 1 (Pengaruh Massa Bandul):</strong> Pada panjang tali tetap <code>1.00 m</code>, ubah massa bandul dari <code>1.0 kg</code> menjadi <code>8.0 kg</code>. Buktikan apakah nilai <strong>Periode (T)</strong> berubah!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 2 (Pengaruh Panjang Tali):</strong> Ubah panjang tali dari <code>0.25 m</code> menjadi <code>1.00 m</code> (4 kali lebih panjang). Buktikan apakah periode ayunan (T) menjadi 2 kali lebih lama sesuai rumus <code>T ∝ √L</code>!</span>
+                    <span><strong>Percobaan 2 (Pengaruh Panjang Tali):</strong> Bandingkan nilai Periode saat panjang tali <code>0.50 m</code> dengan saat panjang tali <code>2.00 m</code> (4 kali lebih panjang).</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 3 (Praktikum Stopwatch 10 Ayunan):</strong> Tekan <strong>Reset</strong>, lalu jalankan Stopwatch bersamaan dengan dimulainya ayunan. Hentikan Stopwatch tepat saat penghitung mencapai <strong>10 Kali</strong>, lalu bagi waktu tersebut dengan 10 untuk mencocokkan nilai T.</span>
-                </li>
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik <strong>"Buat Misi Baru"</strong>, atur panjang tali (L) yang menghasilkan periode sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> (+100 Poin).</span>
+                    <span><strong>Percobaan 3 (Uji Stopwatch):</strong> Gunakan <strong>Stopwatch Praktikum</strong> untuk mengukur waktu 10 kali ayunan penuh, lalu bagi hasilnya dengan 10 dan cocokkan dengan nilai <strong>Periode (T)</strong>!</span>
                 </li>
             </ul>
         </section>
@@ -193,7 +183,7 @@
 
     <footer>
         <div class="container">
-            <p>PhysLab 10 • Modul Ayunan Bandul Sederhana (Getaran Harmonik)</p>
+            <p>PhysLab 10 • Modul Getaran Harmonik & Ayunan Bandul</p>
         </div>
     </footer>
 
