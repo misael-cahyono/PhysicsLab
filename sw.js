@@ -1,12 +1,12 @@
-const CACHE_NAME = 'physlab-10-v1';
+const CACHE_NAME = 'physlab-10-offline-v3';
 
-// Daftar seluruh file proyek yang akan disimpan agar bisa berjalan offline
-const ASSETS_TO_CACHE = [
+const ASSETS_TO_CACHE = new Array(
     './',
     './index.html',
     './style.css',
     './lab-tools.js',
     './manifest.json',
+    './banner-physlab.png',
     './parabola.html',
     './parabola.js',
     './pegas.html',
@@ -17,24 +17,22 @@ const ASSETS_TO_CACHE = [
     './bandul.js',
     './energi.html',
     './energi.js'
-];
+);
 
-// 1. Tahap Install: Menyimpan semua file ke dalam cache browser
-self.addEventListener('install', (event) => {
+self.addEventListener('install', function(event) {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
+        caches.open(CACHE_NAME).then(function(cache) {
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
     self.skipWaiting();
 });
 
-// 2. Tahap Activate: Menghapus cache versi lama jika ada pembaruan kode
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', function(event) {
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
+        caches.keys().then(function(cacheNames) {
             return Promise.all(
-                cacheNames.map((cache) => {
+                cacheNames.map(function(cache) {
                     if (cache !== CACHE_NAME) {
                         return caches.delete(cache);
                     }
@@ -45,11 +43,9 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// 3. Tahap Fetch: Mengambil file dari memori offline jika tidak ada internet
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            // Gunakan file dari cache jika tersedia, jika tidak ambil dari internet
+        caches.match(event.request).then(function(cachedResponse) {
             return cachedResponse || fetch(event.request);
         })
     );
