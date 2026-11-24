@@ -264,10 +264,8 @@ if (btnCheckMission) {
                 if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
                 challengeFeedback.textContent = '🎉 TEPAT! Gaya apung saat ini ' + currentFa.toFixed(1) + ' N sesuai target (+100 Poin)!';
             } else {
-}
-} else {
-challengeFeedback.className = 'challenge-feedback feedback-fail';
-challengeFeedback.textContent = '❌ Belum pas! Gaya apung saat ini ' + currentFa.toFixed(1) + ' N (Target: ' + targetFa + ' N).';
+    challengeFeedback.className = 'challenge-feedback feedback-fail';
+    challengeFeedback.textContent = '❌ Belum pas! Gaya apung saat ini ' + currentFa.toFixed(1) + ' N (Target: ' + targetFa + ' N).';
 }
 });
 }
