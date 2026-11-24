@@ -1,23 +1,24 @@
 const canvas = document.getElementById('incline-canvas');
 const ctx = canvas.getContext('2d');
 
-const inputAngle = document.getElementById('input-angle');
-const inputM = document.getElementById('input-m');
+const inputTheta = document.getElementById('input-theta');
+const inputMass = document.getElementById('input-mass');
 const inputMu = document.getElementById('input-mu');
-const presetSurface = document.getElementById('preset-surface');
-const checkVectors = document.getElementById('check-vectors');
 
-const valAngle = document.getElementById('val-angle');
-const valM = document.getElementById('val-m');
+const valTheta = document.getElementById('val-theta');
+const valMass = document.getElementById('val-mass');
 const valMu = document.getElementById('val-mu');
 
 const statusBox = document.getElementById('status-box');
-const outA = document.getElementById('out-a');
+const outWx = document.getElementById('out-wx');
 const outFg = document.getElementById('out-fg');
+const outA = document.getElementById('out-a');
 const outN = document.getElementById('out-n');
-const outV = document.getElementById('out-v');
 
-const btnStart = document.getElementById('btn-start');
+const expCalc = document.getElementById('exp-calc');
+const expReason = document.getElementById('exp-reason');
+
+const btnSlide = document.getElementById('btn-slide');
 const btnReset = document.getElementById('btn-reset');
 const btnFormula = document.getElementById('btn-formula');
 const formulaPanel = document.getElementById('formula-panel');
@@ -27,223 +28,158 @@ const btnCheckMission = document.getElementById('btn-check-mission');
 const challengeDesc = document.getElementById('challenge-desc');
 const challengeFeedback = document.getElementById('challenge-feedback');
 
-let angle = 30, m = 2.0, mu = 0.20;
+let thetaDeg = 30, mass = 5.0, mu = 0.25;
 const g = 9.8;
-let currentAcceleration = 0;
+let slideDist = 0, slideVel = 0, isSliding = false;
+let currentAccel = 2.78, targetAccel = null, missionSolved = false;
 
-let targetAccel = null;
-let missionSolved = false;
-
-let isSliding = false;
-let distanceMoved = 0;
-let currentVelocity = 0;
-let t = 0;
-
-const rampLengthMeters = 5.0;
-const scale = 85;
-const rampLengthPx = rampLengthMeters * scale;
-const baseBottomY = canvas.height - 40;
-const baseRightX = canvas.width - 70;
-
-function calculatePhysics() {
-    angle = parseFloat(inputAngle.value);
-    m = parseFloat(inputM.value);
+function animateIncline() {
+    thetaDeg = parseFloat(inputTheta.value);
+    mass = parseFloat(inputMass.value);
     mu = parseFloat(inputMu.value);
 
-    valAngle.textContent = angle + '°';
-    valM.textContent = m.toFixed(1) + ' kg';
+    valTheta.textContent = thetaDeg + '°';
+    valMass.textContent = mass.toFixed(1) + ' kg';
     valMu.textContent = mu.toFixed(2);
 
-    const rad = angle * (Math.PI / 180);
-    const weight = m * g;
-    const wParallel = weight * Math.sin(rad);
-    const normalForce = weight * Math.cos(rad);
-    const maxFriction = mu * normalForce;
+    const rad = thetaDeg * (Math.PI / 180);
+    const weight = mass * g;
+    const wx = weight * Math.sin(rad);
+    const normal = weight * Math.cos(rad);
+    const fMax = mu * normal;
 
-    let acceleration = 0;
-    let actualFriction = 0;
+    let fg = fMax;
+    let accel = 0;
 
-    if (wParallel > maxFriction) {
-        actualFriction = maxFriction;
-        acceleration = (wParallel - actualFriction) / m;
-
-        statusBox.className = 'status-badge status-gerak';
-        statusBox.textContent = isSliding ? 'Status: Balok Sedang Meluncur Turun!' : 'Status: Siap Meluncur (w·sin θ > f_gesek)';
-        btnStart.disabled = false;
-        btnStart.style.opacity = '1';
+    if (wx > fMax) {
+        accel = (wx - fMax) / mass;
+        statusBox.className = 'status-badge status-meluncur';
+        statusBox.textContent = 'Status: Balok MELUNCUR TURUN (Gaya tarik > Gaya gesek)';
     } else {
-        actualFriction = wParallel;
-        acceleration = 0;
+        fg = wx;
+        accel = 0;
         isSliding = false;
-
         statusBox.className = 'status-badge status-diam';
-        statusBox.textContent = 'Status: Balok Diam Tertahan Gesekan (w·sin θ ≤ f_gesek)';
-        btnStart.disabled = true;
-        btnStart.style.opacity = '0.5';
+        statusBox.textContent = 'Status: Balok DIAM TERTAHAN (Gaya gesek menahan balok)';
+    }
+    currentAccel = accel;
+
+    outWx.textContent = wx.toFixed(2) + ' N';
+    outFg.textContent = fg.toFixed(2) + ' N';
+    outA.textContent = accel.toFixed(2) + ' m/s²';
+    outN.textContent = normal.toFixed(2) + ' N';
+
+    if (expCalc && expReason) {
+        expCalc.innerHTML =
+            '1. Gaya Tarik Turun (w·sin θ) = <code>' + mass.toFixed(1) + ' × 9,8 × sin ' + thetaDeg + '° = ' + wx.toFixed(2) + ' N</code><br>' +
+            '2. Gaya Gesek Maks (μ·N) = <code>' + mu.toFixed(2) + ' × ' + normal.toFixed(2) + ' N = ' + fMax.toFixed(2) + ' N</code><br>' +
+            '3. Percepatan (a) = <code>(w·sin θ - f_gesek) / m = ' + accel.toFixed(2) + ' m/s²</code>';
+
+        if (accel > 0) {
+            expReason.textContent = 'Komponen gaya berat yang menarik balok sejajar bidang miring (' + wx.toFixed(1) + ' N) lebih besar daripada gaya gesek maksimum permukaan (' + fMax.toFixed(1) + ' N). Sesuai Hukum II Newton, resultan gaya ke bawah menghasilkan percepatan sebesar ' + accel.toFixed(2) + ' m/s².';
+        } else {
+            expReason.textContent = 'Komponen gaya tarik ke bawah (' + wx.toFixed(1) + ' N) belum cukup kuat untuk mengatasi gaya gesek statis maksimum permukaan (' + fMax.toFixed(1) + ' N), sehingga balok tetap diam seimbang di atas bidang miring.';
+        }
     }
 
-    currentAcceleration = acceleration;
-    outA.textContent = acceleration.toFixed(2) + ' m/s²';
-    outFg.textContent = actualFriction.toFixed(2) + ' N';
-    outN.textContent = normalForce.toFixed(2) + ' N';
-    outV.textContent = currentVelocity.toFixed(2) + ' m/s';
-
-    return { rad: rad, weight: weight, normalForce: normalForce, actualFriction: actualFriction, acceleration: acceleration };
-}
-
-function animate() {
-    if (!isSliding) return;
-    const phys = calculatePhysics();
-    
-    t += 0.025;
-    distanceMoved = 0.5 * phys.acceleration * t * t;
-    currentVelocity = phys.acceleration * t;
-
-    const maxTravel = rampLengthMeters - 0.6;
-    if (distanceMoved >= maxTravel) {
-        distanceMoved = maxTravel;
-        currentVelocity = Math.sqrt(2 * phys.acceleration * maxTravel);
-        isSliding = false;
-        calculatePhysics();
-        drawScene();
-        return;
+    if (isSliding && accel > 0) {
+        slideVel += accel * 0.08;
+        slideDist += slideVel;
+        if (slideDist > 260) {
+            slideDist = 260;
+            isSliding = false;
+        }
     }
 
-    outV.textContent = currentVelocity.toFixed(2) + ' m/s';
-    drawScene();
-    requestAnimationFrame(animate);
+    drawInclineScene(rad, wx, fg, normal);
+    requestAnimationFrame(animateIncline);
 }
-
-function drawScene() {
-    const phys = calculatePhysics();
+function drawInclineScene(rad, wx, fg, normal) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const rad = phys.rad;
-    const rampWidthPx = rampLengthPx * Math.cos(rad);
-    const rampHeightPx = rampLengthPx * Math.sin(rad);
-    const topX = baseRightX - rampWidthPx;
-    const topY = baseBottomY - rampHeightPx;
+    const baseX = 110, baseY = 310, rampLen = 400;
+    const topX = baseX;
+    const topY = baseY - rampLen * Math.sin(rad);
+    const rightX = baseX + rampLen * Math.cos(rad);
+    const rightY = baseY;
 
+    // 1. Segitiga Bidang Miring
+    ctx.fillStyle = '#e2e8f0';
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(30, baseBottomY);
-    ctx.lineTo(canvas.width - 30, baseBottomY);
-    ctx.stroke();
-
-    ctx.fillStyle = mu === 0 ? '#e0f2fe' : '#e2e8f0';
-    ctx.strokeStyle = '#475569';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(baseRightX, baseBottomY);
-    ctx.lineTo(topX, topY);
-    ctx.lineTo(topX, baseBottomY);
+    ctx.moveTo(topX, topY);
+    ctx.lineTo(rightX, rightY);
+    ctx.lineTo(baseX, baseY);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
+    // Label Sudut Theta
     ctx.fillStyle = '#1e293b';
-    ctx.font = 'bold 13px Segoe UI';
-    ctx.fillText('θ = ' + angle + '°', baseRightX - 65, baseBottomY - 10);
+    ctx.font = 'bold 12px Segoe UI';
+    ctx.fillText(thetaDeg + '°', rightX - 42, rightY - 8);
 
-    const boxSize = 40 + (m * 2);
-    const distPx = 25 + (distanceMoved * scale);
+    // 2. Posisi & Gambar Balok di Atas Bidang Miring
+    const startOffset = 55 + slideDist;
+    const bx = topX + startOffset * Math.cos(rad);
+    const by = topY + startOffset * Math.sin(rad);
+    const boxW = 46, boxH = 34;
 
     ctx.save();
-    ctx.translate(topX, topY);
+    ctx.translate(bx, by);
     ctx.rotate(rad);
 
     ctx.fillStyle = '#2563eb';
-    ctx.fillRect(distPx, -boxSize, boxSize, boxSize);
+    ctx.fillRect(-boxW / 2, -boxH, boxW, boxH);
     ctx.strokeStyle = '#1e3a8a';
     ctx.lineWidth = 2;
-    ctx.strokeRect(distPx, -boxSize, boxSize, boxSize);
+    ctx.strokeRect(-boxW / 2, -boxH, boxW, boxH);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Segoe UI';
+    ctx.font = 'bold 11px Segoe UI';
     ctx.textAlign = 'center';
-    ctx.fillText(m + 'kg', distPx + boxSize / 2, -boxSize / 2 + 4);
+    ctx.fillText(mass.toFixed(0) + 'kg', 0, -boxH / 2 + 4);
     ctx.textAlign = 'left';
 
-    if (checkVectors && checkVectors.checked) {
-        const centerX = distPx + boxSize / 2;
-        const centerY = -boxSize / 2;
-
-        const nLen = Math.min(30 + phys.normalForce * 0.7, 85);
-        drawVector(centerX, centerY, centerX, centerY - nLen, '#16a34a', 'N');
-
-        if (phys.actualFriction > 0.1) {
-            const fLen = Math.min(25 + phys.actualFriction * 1.2, 80);
-            drawVector(centerX, centerY, centerX - fLen, centerY, '#dc2626', 'f');
-        }
-
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(-rad);
-        const wLen = Math.min(35 + phys.weight * 0.7, 95);
-        drawVector(0, 0, 0, wLen, '#ea580c', 'w');
-        ctx.restore();
+    // Panah Gaya Tarik Turun (Hijau ke kanan bawah)
+    drawVector(0, -boxH / 2, Math.min(25 + wx * 0.6, 85), -boxH / 2, '#16a34a', 'w·sinθ');
+    // Panah Gaya Gesek (Merah ke kiri atas)
+    if (fg > 0.1) {
+        drawVector(0, -boxH / 2, -Math.min(25 + fg * 0.6, 85), -boxH / 2, '#dc2626', 'f_gesek');
     }
+    // Panah Gaya Normal (Oranye tegak lurus ke atas)
+    drawVector(0, -boxH / 2, 0, -boxH / 2 - Math.min(25 + normal * 0.5, 75), '#ea580c', 'N');
 
     ctx.restore();
 }
 
 function drawVector(x1, y1, x2, y2, color, label) {
-    const headlen = 8;
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const ang = Math.atan2(dy, dx);
-
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = 2.5;
-
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 - headlen * Math.cos(ang - Math.PI / 6), y2 - headlen * Math.sin(ang - Math.PI / 6));
-    ctx.lineTo(x2 - headlen * Math.cos(ang + Math.PI / 6), y2 - headlen * Math.sin(ang + Math.PI / 6));
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.font = 'bold 12px Segoe UI';
-    ctx.fillText(label, x2 + 6, y2 + 4);
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.fillRect(x2 - 3, y2 - 3, 6, 6);
+    ctx.font = 'bold 10px Segoe UI';
+    ctx.fillText(label, x2 + 4, y2 - 4);
 }
 
-function resetSimulation() {
-    isSliding = false;
-    distanceMoved = 0;
-    currentVelocity = 0;
-    t = 0;
-    drawScene();
-}
-
-inputAngle.addEventListener('input', resetSimulation);
-inputM.addEventListener('input', resetSimulation);
-inputMu.addEventListener('input', () => {
-    presetSurface.value = 'custom';
-    resetSimulation();
+btnSlide.addEventListener('click', () => {
+    slideDist = 0; slideVel = 0; isSliding = true;
 });
 
-presetSurface.addEventListener('change', () => {
-    if (presetSurface.value !== 'custom') {
-        inputMu.value = presetSurface.value;
-        resetSimulation();
-    }
+btnReset.addEventListener('click', () => {
+    inputTheta.value = 30; inputMass.value = 5; inputMu.value = 0.25;
+    slideDist = 0; slideVel = 0; isSliding = false;
 });
 
-if (checkVectors) checkVectors.addEventListener('change', drawScene);
+inputTheta.addEventListener('input', () => { slideDist = 0; slideVel = 0; isSliding = false; });
+inputMu.addEventListener('input', () => { slideDist = 0; slideVel = 0; isSliding = false; });
 
 if (btnNewMission) {
     btnNewMission.addEventListener('click', () => {
-        const randomVal = (Math.floor(Math.random() * 45) + 10) / 10; // 1.0 - 5.4 m/s²
-        targetAccel = randomVal;
+        const targets = new Array(1.20, 2.00, 2.78, 3.50, 4.20, 5.00);
+        targetAccel = targets[Math.floor(Math.random() * targets.length)];
         missionSolved = false;
-        challengeDesc.innerHTML = 'Atur <strong>Sudut Kemiringan (θ)</strong> dan <strong>Koefisien Gesek (μ)</strong> agar balok memiliki percepatan luncur sebesar <strong>a = ' + targetAccel.toFixed(2) + ' m/s²</strong> (toleransi ±0.15 m/s²).';
+        challengeDesc.innerHTML = 'Atur sudut kemiringan (θ) & koefisien gesek (μ) agar balok meluncur dengan percepatan <strong>a = ' + targetAccel.toFixed(2) + ' m/s²</strong> (±0.25 m/s²).';
         btnCheckMission.style.display = 'inline-block';
         challengeFeedback.style.display = 'none';
     });
@@ -252,34 +188,19 @@ if (btnNewMission) {
 if (btnCheckMission) {
     btnCheckMission.addEventListener('click', () => {
         if (targetAccel === null) return;
-        const selisih = Math.abs(currentAcceleration - targetAccel);
-        if (selisih <= 0.15) {
+        if (Math.abs(currentAccel - targetAccel) <= 0.25) {
             challengeFeedback.className = 'challenge-feedback feedback-success';
             if (!missionSolved) {
                 missionSolved = true;
                 if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
-                challengeFeedback.textContent = '🎉 TEPAT! Percepatan balok ' + currentAcceleration.toFixed(2) + ' m/s² sesuai target (+100 Poin)!';
-            } else {
-                challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru untuk soal berikutnya.';
-            }
+                challengeFeedback.textContent = '🎉 TEPAT! Percepatan ' + currentAccel.toFixed(2) + ' m/s² sesuai target (+100 Poin)!';
+            } else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
         } else {
             challengeFeedback.className = 'challenge-feedback feedback-fail';
-            challengeFeedback.textContent = '❌ Belum pas! Percepatan saat ini ' + currentAcceleration.toFixed(2) + ' m/s² (Target: ' + targetAccel.toFixed(2) + ' m/s²).';
+            challengeFeedback.textContent = '❌ Belum pas! Percepatan saat ini ' + currentAccel.toFixed(2) + ' m/s² (Target: ' + targetAccel.toFixed(2) + ' m/s²).';
         }
     });
 }
-
-btnStart.addEventListener('click', () => {
-    if (distanceMoved > 0) {
-        distanceMoved = 0;
-        currentVelocity = 0;
-        t = 0;
-    }
-    isSliding = true;
-    animate();
-});
-
-btnReset.addEventListener('click', resetSimulation);
 
 if (btnFormula) {
     btnFormula.addEventListener('click', () => {
@@ -288,4 +209,4 @@ if (btnFormula) {
     });
 }
 
-drawScene();
+animateIncline();
