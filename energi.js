@@ -1,21 +1,22 @@
 const canvas = document.getElementById('energy-canvas');
 const ctx = canvas.getContext('2d');
 
-const inputH1 = document.getElementById('input-h1');
-const inputH2 = document.getElementById('input-h2');
+const inputH0 = document.getElementById('input-h0');
 const inputM = document.getElementById('input-m');
+const inputG = document.getElementById('input-g');
 
-const valH1 = document.getElementById('val-h1');
-const valH2 = document.getElementById('val-h2');
+const valH0 = document.getElementById('val-h0');
 const valM = document.getElementById('val-m');
 
-const statusBox = document.getElementById('status-box');
 const outEp = document.getElementById('out-ep');
 const outEk = document.getElementById('out-ek');
 const outEm = document.getElementById('out-em');
-const outV = document.getElementById('out-v');
+const outVmax = document.getElementById('out-vmax');
 
-const btnPlay = document.getElementById('btn-play');
+const expCalc = document.getElementById('exp-calc');
+const expReason = document.getElementById('exp-reason');
+
+const btnToggle = document.getElementById('btn-toggle');
 const btnReset = document.getElementById('btn-reset');
 const btnFormula = document.getElementById('btn-formula');
 const formulaPanel = document.getElementById('formula-panel');
@@ -25,239 +26,129 @@ const btnCheckMission = document.getElementById('btn-check-mission');
 const challengeDesc = document.getElementById('challenge-desc');
 const challengeFeedback = document.getElementById('challenge-feedback');
 
-let h1 = 15, h2 = 10, m = 50;
-const g = 9.8;
+let h0 = 10.0, m = 5.0, g = 9.8;
+let isRunning = true, progress = 0, dir = 1;
+let currentVmax = 14.00, targetVmax = null, missionSolved = false;
 
-let targetValleySpeed = null;
-let missionSolved = false;
-
-let isRunning = false;
-let direction = 1;
-let currentX = 50;
-
-const startX = 50;
-const valleyX = 270;
-const hill2X = 460;
-const endX = 590;
-const groundY = canvas.height - 35;
-const scaleY = 10.5;
-
-function getTrackHeight(x) {
-    if (x <= startX) return h1;
-    if (x <= valleyX) {
-        const progress = (x - startX) / (valleyX - startX);
-        return h1 * 0.5 * (1 + Math.cos(Math.PI * progress));
-    }
-    if (x <= hill2X) {
-        const progress = (x - valleyX) / (hill2X - valleyX);
-        return h2 * 0.5 * (1 - Math.cos(Math.PI * progress));
-    }
-    if (x <= endX) {
-        const progress = (x - hill2X) / (endX - hill2X);
-        const endHeight = h2 * 0.3;
-        return endHeight + (h2 - endHeight) * 0.5 * (1 + Math.cos(Math.PI * progress));
-    }
-    return h2 * 0.3;
-}
-
-function updateDisplay() {
-    h1 = parseFloat(inputH1.value);
-    h2 = parseFloat(inputH2.value);
-    m = parseFloat(inputM.value);
-
-    valH1.textContent = h1.toFixed(1) + ' m';
-    valH2.textContent = h2.toFixed(1) + ' m';
-    valM.textContent = m + ' kg';
-
-    if (h1 >= h2) {
-        statusBox.className = 'status-badge status-lolos';
-        statusBox.textContent = 'Prediksi: Kereta Mampu Melewati Bukit Kedua (h₁ ≥ h₂)';
+function getTrackHeight(u) {
+    // u dari 0 (puncak kiri h0) -> 0.5 (lembah dasar h=0) -> 1.0 (bukit kanan 0.7*h0)
+    if (u <= 0.5) {
+        const ratio = u / 0.5;
+        return h0 * 0.5 * (1 + Math.cos(Math.PI * ratio));
     } else {
-        statusBox.className = 'status-badge status-gagal';
-        statusBox.textContent = 'Prediksi: Bukit Kedua Terlalu Tinggi! Kereta Akan Berbalik Arah (h₁ < h₂)';
+        const ratio = (u - 0.5) / 0.5;
+        return (h0 * 0.75) * 0.5 * (1 - Math.cos(Math.PI * ratio));
     }
-
-    const currentH = getTrackHeight(currentX);
-    const totalEM = m * g * h1;
-    const currentEP = m * g * currentH;
-    const currentEK = Math.max(0, totalEM - currentEP);
-    const velocity = Math.sqrt((2 * currentEK) / m);
-
-    outEp.textContent = Math.round(currentEP) + ' J';
-    outEk.textContent = Math.round(currentEK) + ' J';
-    outEm.textContent = Math.round(totalEM) + ' J';
-    outV.textContent = velocity.toFixed(2) + ' m/s';
-
-    drawScene(currentH, currentEP, currentEK, totalEM);
 }
 
-function animate() {
-    if (!isRunning) return;
+function animateEnergy() {
+    h0 = parseFloat(inputH0.value);
+    m = parseFloat(inputM.value);
+    g = parseFloat(inputG.value);
 
-    const currentH = getTrackHeight(currentX);
-    const totalEM = m * g * h1;
-    const currentEP = m * g * currentH;
-    const currentEK = totalEM - currentEP;
+    valH0.textContent = h0.toFixed(1) + ' m';
+    valM.textContent = m.toFixed(1) + ' kg';
 
-    if (currentEK <= 0 && currentX > valleyX && direction === 1) {
-        direction = -1;
+    const emTotal = m * g * h0;
+    const vMax = Math.sqrt(2 * g * h0);
+    currentVmax = vMax;
+
+    const currentH = getTrackHeight(progress);
+    const ep = m * g * currentH;
+    const ek = Math.max(0, emTotal - ep);
+    const vNow = Math.sqrt((2 * ek) / m);
+
+    if (isRunning) {
+        const speedFactor = 0.003 + (vNow / 600);
+        progress += dir * speedFactor;
+        if (progress >= 1.0) { progress = 1.0; dir = -1; }
+        else if (progress <= 0.0) { progress = 0.0; dir = 1; }
     }
 
-    if (currentX <= startX + 2 && direction === -1) {
-        currentX = startX + 2;
-        direction = 1;
+    outEp.textContent = ep.toFixed(1) + ' J';
+    outEk.textContent = ek.toFixed(1) + ' J';
+    outEm.textContent = emTotal.toFixed(1) + ' J';
+    outVmax.textContent = vMax.toFixed(2) + ' m/s';
+
+    if (expCalc && expReason) {
+        expCalc.innerHTML =
+            '1. Energi Mekanik Total (EM) = <code>m · g · h₀ = ' + m.toFixed(1) + ' × ' + g + ' × ' + h0.toFixed(1) + ' = ' + emTotal.toFixed(1) + ' Joule</code><br>' +
+            '2. Kecepatan Maks di Lembah (v_max) = <code>√(2 · g · h₀) = √(2 × ' + g + ' × ' + h0.toFixed(1) + ') = ' + vMax.toFixed(2) + ' m/s</code><br>' +
+            '3. Posisi Saat Ini (h = ' + currentH.toFixed(1) + ' m): <code>EP = ' + ep.toFixed(1) + ' J</code> & <code>EK = ' + ek.toFixed(1) + ' J</code>';
+
+        expReason.textContent = 'Sesuai Hukum Kekekalan Energi Mekanik (EM = EP + EK = Konstan), saat kereta meluncur turun ke lembah, Energi Potensial berkurang dan berubah sepenuhnya menjadi Energi Kinetik sehingga kecepatan mencapai titik puncak (' + vMax.toFixed(2) + ' m/s). Perhatikan bahwa massa kereta saling meniadakan dalam rumus kecepatan sehingga tidak memengaruhi v_max.';
     }
 
-    const speedPhysics = Math.sqrt(Math.max(0, (2 * currentEK) / m));
-    const moveStep = Math.max(1.5, speedPhysics * 0.35);
-
-    currentX += moveStep * direction;
-
-    if (currentX >= endX) {
-        currentX = endX;
-        isRunning = false;
-        btnPlay.textContent = '▶ Luncurkan Ulang';
-        updateDisplay();
-        return;
-    }
-
-    updateDisplay();
-    requestAnimationFrame(animate);
+    drawEnergyScene(currentH, ep, ek, emTotal);
+    requestAnimationFrame(animateEnergy);
 }
-
-function drawScene(currentH, ep, ek, em) {
+function drawEnergyScene(currentH, ep, ek, emTotal) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const yH1 = groundY - h1 * scaleY;
-    const yH2 = groundY - h2 * scaleY;
+    const startX = 160, trackW = 440, groundY = 315;
+    const scaleY = 220 / 15; // Skala tinggi maksimum 15 meter
 
-    // 1. Garis Acuan Ketinggian h1 & h2 (Semi-transparan)
-    ctx.save();
-    ctx.globalAlpha = 0.6;
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 1.2;
+    // 1. Garis Dasar Tanah
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(140, groundY); ctx.lineTo(620, groundY); ctx.stroke();
 
+    // 2. Kurva Lintasan Roller Coaster
+    ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.moveTo(20, yH1);
-    ctx.lineTo(startX + 40, yH1);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(hill2X - 40, yH2);
-    ctx.lineTo(hill2X + 45, yH2);
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.fillStyle = '#475569';
-    ctx.font = '11px Segoe UI';
-    ctx.fillText('h₁ = ' + h1 + 'm', 15, yH1 - 5);
-    ctx.fillText('h₂ = ' + h2 + 'm', hill2X - 15, yH2 - 8);
-
-    // 2. Badan Bukit & Rel Lintasan
-    ctx.beginPath();
-    ctx.moveTo(startX, groundY);
-    for (let x = startX; x <= endX; x += 4) {
-        const y = groundY - getTrackHeight(x) * scaleY;
-        ctx.lineTo(x, y);
+    for (let i = 0; i <= 60; i++) {
+        const u = i / 60;
+        const px = startX + u * trackW;
+        const py = groundY - getTrackHeight(u) * scaleY;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
-    ctx.lineTo(endX, groundY);
-    ctx.closePath();
-
-    ctx.fillStyle = '#e2e8f0';
-    ctx.fill();
-
-    ctx.beginPath();
-    for (let x = startX; x <= endX; x += 4) {
-        const y = groundY - getTrackHeight(x) * scaleY;
-        if (x === startX) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = '#2563eb';
-    ctx.lineWidth = 4;
     ctx.stroke();
 
-    // 3. Tanah Dasar
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(15, groundY);
-    ctx.lineTo(canvas.width - 15, groundY);
-    ctx.stroke();
-
-    // 4. Kereta Roller Coaster
+    // 3. Kereta di Atas Lintasan
+    const cartX = startX + progress * trackW;
     const cartY = groundY - currentH * scaleY;
-    const nextH = getTrackHeight(currentX + 2);
-    const slopeAngle = Math.atan2(-(nextH - currentH) * scaleY, 2);
-
-    ctx.save();
-    ctx.translate(currentX, cartY);
-    ctx.rotate(slopeAngle);
-
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(-16, -20, 32, 14);
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.arc(-9, -4, 4, 0, Math.PI * 2);
-    ctx.arc(9, -4, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // 5. Diagram Batang Energi Live
-    drawEnergyBars(ep, ek, em);
-}
-
-function drawEnergyBars(ep, ek, em) {
-    const boxX = canvas.width - 175;
-    const boxY = 15;
-    const maxBarHeight = 90;
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1;
-    ctx.fillRect(boxX, boxY, 160, 130);
-    ctx.strokeRect(boxX, boxY, 160, 130);
-
-    ctx.fillStyle = '#1e293b';
-    ctx.font = 'bold 11px Segoe UI';
-    ctx.fillText('Grafik Energi Live', boxX + 32, boxY + 16);
-
-    const baseLineY = boxY + 112;
-    const epHeight = em > 0 ? (ep / em) * maxBarHeight : 0;
-    const ekHeight = em > 0 ? (ek / em) * maxBarHeight : 0;
-    const emHeight = em > 0 ? maxBarHeight : 0;
-
-    ctx.fillStyle = '#2563eb';
-    ctx.fillRect(boxX + 22, baseLineY - epHeight, 26, epHeight);
-    ctx.fillText('EP', boxX + 28, baseLineY + 13);
-
-    ctx.fillStyle = '#16a34a';
-    ctx.fillRect(boxX + 67, baseLineY - ekHeight, 26, ekHeight);
-    ctx.fillText('EK', boxX + 73, baseLineY + 13);
 
     ctx.fillStyle = '#ea580c';
-    ctx.fillRect(boxX + 112, baseLineY - emHeight, 26, emHeight);
-    ctx.fillText('EM', boxX + 117, baseLineY + 13);
+    ctx.beginPath(); ctx.arc(cartX, cartY - 10, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#9a3412'; ctx.lineWidth = 2; ctx.stroke();
+
+    // 4. Grafik Batang Energi (EP, EK, EM) di Sisi Kiri
+    const maxBarH = 210;
+    const maxPossibleEm = 20 * 9.8 * 15; // 2940 J
+    const epH = (ep / maxPossibleEm) * maxBarH;
+    const ekH = (ek / maxPossibleEm) * maxBarH;
+    const emH = (emTotal / maxPossibleEm) * maxBarH;
+
+    drawBar(30, groundY, 26, epH, '#0284c7', 'EP');
+    drawBar(66, groundY, 26, ekH, '#dc2626', 'EK');
+    drawBar(102, groundY, 26, emH, '#16a34a', 'EM');
 }
 
-function resetCart() {
-    isRunning = false;
-    direction = 1;
-    currentX = startX;
-    btnPlay.textContent = '▶ Luncurkan Kereta';
-    updateDisplay();
+function drawBar(x, baseY, w, h, color, label) {
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(x, baseY - 210, w, 210);
+    ctx.fillStyle = color;
+    ctx.fillRect(x, baseY - h, w, h);
+    ctx.fillStyle = '#1e293b'; ctx.font = 'bold 11px Segoe UI'; ctx.textAlign = 'center';
+    ctx.fillText(label, x + w / 2, baseY + 18);
+    ctx.textAlign = 'left';
 }
 
-inputH1.addEventListener('input', resetCart);
-inputH2.addEventListener('input', resetCart);
-inputM.addEventListener('input', updateDisplay);
+btnToggle.addEventListener('click', () => {
+    isRunning = !isRunning;
+    btnToggle.textContent = isRunning ? '⏸ Jeda Kereta' : '▶ Lanjutkan Kereta';
+});
+
+btnReset.addEventListener('click', () => {
+    inputH0.value = 10.0; inputM.value = 5.0; inputG.value = 9.8;
+    progress = 0; dir = 1; isRunning = true; btnToggle.textContent = '⏸ Jeda Kereta';
+});
 
 if (btnNewMission) {
     btnNewMission.addEventListener('click', () => {
-        // Pilih acak tinggi target tersembunyi antara 6m sampai 24m lalu hitung kecepatan lembahnya
-        const secretH = Math.floor(Math.random() * 19) + 6;
-        targetValleySpeed = Math.sqrt(2 * g * secretH);
+        const targets = new Array(8.85, 10.84, 12.52, 14.00, 15.34, 16.57);
+        targetVmax = targets[Math.floor(Math.random() * targets.length)];
         missionSolved = false;
-        challengeDesc.innerHTML = 'Atur <strong>Tinggi Bukit Awal (h₁)</strong> sehingga kereta mencapai kecepatan <strong>v = ' + targetValleySpeed.toFixed(2) + ' m/s</strong> saat tiba di titik terendah lembah (toleransi ±0.40 m/s).';
+        challengeDesc.innerHTML = 'Atur tinggi awal (h₀) & gravitasi planet agar kecepatan maksimum kereta di dasar lembah mencapai <strong>v_max = ' + targetVmax.toFixed(2) + ' m/s</strong> (±0.35 m/s).';
         btnCheckMission.style.display = 'inline-block';
         challengeFeedback.style.display = 'none';
     });
@@ -265,36 +156,20 @@ if (btnNewMission) {
 
 if (btnCheckMission) {
     btnCheckMission.addEventListener('click', () => {
-        if (targetValleySpeed === null) return;
-        const actualValleySpeed = Math.sqrt(2 * g * h1);
-        const selisih = Math.abs(actualValleySpeed - targetValleySpeed);
-        if (selisih <= 0.40) {
+        if (targetVmax === null) return;
+        if (Math.abs(currentVmax - targetVmax) <= 0.35) {
             challengeFeedback.className = 'challenge-feedback feedback-success';
             if (!missionSolved) {
                 missionSolved = true;
                 if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
-                challengeFeedback.textContent = '🎉 TEPAT! Dengan h₁ = ' + h1 + ' m, kecepatan di dasar lembah adalah ' + actualValleySpeed.toFixed(2) + ' m/s (+100 Poin)!';
-            } else {
-                challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru untuk tantangan berikutnya.';
-            }
+                challengeFeedback.textContent = '🎉 TEPAT! Kecepatan maksimum lembah ' + currentVmax.toFixed(2) + ' m/s sesuai target (+100 Poin)!';
+            } else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
         } else {
             challengeFeedback.className = 'challenge-feedback feedback-fail';
-            challengeFeedback.textContent = '❌ Belum pas! Dengan h₁ = ' + h1 + ' m, kecepatan lembah adalah ' + actualValleySpeed.toFixed(2) + ' m/s (Target: ' + targetValleySpeed.toFixed(2) + ' m/s).';
+            challengeFeedback.textContent = '❌ Belum pas! Kecepatan lembah saat ini ' + currentVmax.toFixed(2) + ' m/s (Target: ' + targetVmax.toFixed(2) + ' m/s).';
         }
     });
 }
-
-btnPlay.addEventListener('click', () => {
-    if (currentX >= endX) {
-        currentX = startX;
-        direction = 1;
-    }
-    isRunning = !isRunning;
-    btnPlay.textContent = isRunning ? '⏸ Jeda' : '▶ Lanjutkan';
-    if (isRunning) animate();
-});
-
-btnReset.addEventListener('click', resetCart);
 
 if (btnFormula) {
     btnFormula.addEventListener('click', () => {
@@ -303,4 +178,4 @@ if (btnFormula) {
     });
 }
 
-updateDisplay();
+animateEnergy();
