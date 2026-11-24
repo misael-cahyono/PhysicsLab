@@ -10,168 +10,149 @@ const valL = document.getElementById('val-l');
 const valM = document.getElementById('val-m');
 const valAngle = document.getElementById('val-angle');
 
-const outT = document.getElementById('out-t');
-const outF = document.getElementById('out-f');
-const outTheta = document.getElementById('out-theta');
-const outCount = document.getElementById('out-count');
+const outPeriod = document.getElementById('out-period');
+const outFreq = document.getElementById('out-freq');
+const outSwings = document.getElementById('out-swings');
+const outOmega = document.getElementById('out-omega');
+
+const expCalc = document.getElementById('exp-calc');
+const expReason = document.getElementById('exp-reason');
 
 const btnToggle = document.getElementById('btn-toggle');
 const btnReset = document.getElementById('btn-reset');
-const swDisplay = document.getElementById('sw-display');
-const swStart = document.getElementById('sw-start');
-const swReset = document.getElementById('sw-reset');
 const btnFormula = document.getElementById('btn-formula');
 const formulaPanel = document.getElementById('formula-panel');
+
+const swDisplay = document.getElementById('sw-display');
+const btnSwStart = document.getElementById('btn-sw-start');
+const btnSwReset = document.getElementById('btn-sw-reset');
 
 const btnNewMission = document.getElementById('btn-new-mission');
 const btnCheckMission = document.getElementById('btn-check-mission');
 const challengeDesc = document.getElementById('challenge-desc');
 const challengeFeedback = document.getElementById('challenge-feedback');
 
-let L = 1.0, m = 1.0, maxAngleDeg = 20, g = 9.8;
-let currentPeriod = 2.01;
-let targetPeriod = null;
-let missionSolved = false;
+let L = 1.00, m = 2.0, angleMaxDeg = 25, g = 9.8;
+let isRunning = true, simTime = 0, lastTimestamp = null;
+let swRunning = false, swElapsed = 0;
+let currentPeriod = 2.01, targetPeriod = null, missionSolved = false;
 
-let isSwinging = true;
-let simTime = 0;
-let lastFrameTime = performance.now();
-
-let swRunning = false;
-let swElapsed = 0;
-
-const pivotX = canvas.width / 2;
-const pivotY = 45;
-const scale = 150;
-
-function updatePhysicsAndDraw(now) {
-    const dt = (now - lastFrameTime) / 1000;
-    lastFrameTime = now;
+function animatePendulum(timestamp) {
+    if (!lastTimestamp) lastTimestamp = timestamp;
+    const dt = (timestamp - lastTimestamp) / 1000;
+    lastTimestamp = timestamp;
 
     L = parseFloat(inputL.value);
     m = parseFloat(inputM.value);
-    maxAngleDeg = parseFloat(inputAngle.value);
+    angleMaxDeg = parseFloat(inputAngle.value);
     g = parseFloat(inputG.value);
 
     valL.textContent = L.toFixed(2) + ' m';
     valM.textContent = m.toFixed(1) + ' kg';
-    valAngle.textContent = maxAngleDeg + '°';
+    valAngle.textContent = angleMaxDeg + '°';
 
-    const T = 2 * Math.PI * Math.sqrt(L / g);
-    currentPeriod = T;
-    const f = 1 / T;
     const omega = Math.sqrt(g / L);
+    const period = (2 * Math.PI) / omega;
+    const freq = 1 / period;
+    currentPeriod = period;
 
-    if (isSwinging) {
+    if (isRunning) {
         simTime += dt;
+        if (swRunning) {
+            swElapsed += dt;
+            if (swDisplay) swDisplay.textContent = swElapsed.toFixed(2) + ' s';
+        }
     }
 
-    const theta0Rad = maxAngleDeg * (Math.PI / 180);
-    const currentThetaRad = theta0Rad * Math.cos(omega * simTime);
-    const currentThetaDeg = currentThetaRad * (180 / Math.PI);
-    const swingCount = Math.floor(simTime / T);
+    const swings = Math.floor(simTime / period);
+    const thetaMaxRad = angleMaxDeg * (Math.PI / 180);
+    const currentTheta = thetaMaxRad * Math.cos(omega * simTime);
 
-    outT.textContent = T.toFixed(2) + ' s';
-    outF.textContent = f.toFixed(2) + ' Hz';
-    outTheta.textContent = currentThetaDeg.toFixed(1) + '°';
-    outCount.textContent = swingCount + ' Kali';
+    outPeriod.textContent = period.toFixed(2) + ' s';
+    outFreq.textContent = freq.toFixed(2) + ' Hz';
+    outSwings.textContent = swings + ' Kali';
+    outOmega.textContent = omega.toFixed(2) + ' rad/s';
 
-    if (swRunning) {
-        swElapsed += dt;
-        const formattedSw = swElapsed < 10 ? '0' + swElapsed.toFixed(2) : swElapsed.toFixed(2);
-        swDisplay.textContent = formattedSw + ' s';
+    if (expCalc && expReason) {
+        expCalc.innerHTML =
+            '1. Periode Ayunan (T) = <code>2π · √(L / g) = 2(3,14) · √(' + L.toFixed(2) + ' / ' + g + ') = ' + period.toFixed(2) + ' s</code><br>' +
+            '2. Frekuensi (f) = <code>1 / T = 1 / ' + period.toFixed(2) + ' = ' + freq.toFixed(2) + ' Hz</code><br>' +
+            '3. Kecepatan Sudut (ω) = <code>√(g / L) = √(' + g + ' / ' + L.toFixed(2) + ') = ' + omega.toFixed(2) + ' rad/s</code>';
+
+        expReason.textContent = 'Periode ayunan bandul hanya bergantung pada panjang tali (L = ' + L.toFixed(2) + ' m) dan percepatan gravitasi (g = ' + g + ' m/s²), sedangkan massa bandul (' + m.toFixed(1) + ' kg) tidak memengaruhi waktu ayunan. Makin panjang tali, lintasan ayunan makin lebar sehingga waktu satu ayunan penuh menjadi lebih lama.';
     }
 
-    drawPendulum(currentThetaRad);
-    requestAnimationFrame(updatePhysicsAndDraw);
+    drawPendulumScene(currentTheta);
+    requestAnimationFrame(animatePendulum);
 }
-
-function drawPendulum(thetaRad) {
+function drawPendulumScene(theta) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const ropeLengthPx = L * scale;
-    const bobX = pivotX + ropeLengthPx * Math.sin(thetaRad);
-    const bobY = pivotY + ropeLengthPx * Math.cos(thetaRad);
+    const pivotX = canvas.width / 2, pivotY = 45;
+    const ropePx = 70 + L * 95;
+    const bobX = pivotX + ropePx * Math.sin(theta);
+    const bobY = pivotY + ropePx * Math.cos(theta);
 
-    // 1. Busur Derajat
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(pivotX, pivotY, 65, Math.PI * 0.25, Math.PI * 0.75);
-    ctx.stroke();
+    // 1. Tiang Penyangga Atas
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(pivotX - 100, pivotY - 12, 200, 12);
 
-    // 2. Garis Vertikal Titik Setimbang (Semi-transparan)
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(pivotX, pivotY);
-    ctx.lineTo(pivotX, pivotY + ropeLengthPx + 35);
-    ctx.stroke();
+    // 2. Garis Vertikal Acuan (Titik Setimbang)
+    ctx.save(); ctx.globalAlpha = 0.45; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(pivotX, pivotY + ropePx + 35); ctx.stroke();
     ctx.restore();
 
-    // 3. Lintasan Ayunan
-    const maxRad = maxAngleDeg * (Math.PI / 180);
-    ctx.strokeStyle = 'rgba(37, 99, 235, 0.2)';
-    ctx.lineWidth = 3;
+    // 3. Busur Lintasan Ayunan
+    const maxRad = angleMaxDeg * (Math.PI / 180);
+    ctx.save(); ctx.globalAlpha = 0.25; ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(pivotX, pivotY, ropeLengthPx, Math.PI / 2 - maxRad, Math.PI / 2 + maxRad);
-    ctx.stroke();
+    ctx.arc(pivotX, pivotY, ropePx, Math.PI / 2 - maxRad, Math.PI / 2 + maxRad);
+    ctx.stroke(); ctx.restore();
 
-    // 4. Penyangga Atas
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(pivotX - 90, pivotY - 12, 180, 12);
+    // 4. Tali Bandul
+    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(bobX, bobY); ctx.stroke();
 
-    // 5. Tali Bandul
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(pivotX, pivotY);
-    ctx.lineTo(bobX, bobY);
-    ctx.stroke();
+    // 5. Titik Poros & Bola Bandul
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(pivotX, pivotY, 5, 0, Math.PI * 2); ctx.fill();
 
+    const bobRadius = 14 + m * 1.4;
     ctx.fillStyle = '#2563eb';
-    ctx.beginPath();
-    ctx.arc(pivotX, pivotY, 5, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(bobX, bobY, bobRadius, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#1e3a8a'; ctx.lineWidth = 2; ctx.stroke();
 
-    // 6. Bola Bandul
-    const bobRadius = 14 + (m * 3);
-    ctx.fillStyle = '#2563eb';
-    ctx.beginPath();
-    ctx.arc(bobX, bobY, bobRadius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#1e3a8a';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px Segoe UI';
-    ctx.textAlign = 'center';
-    ctx.fillText(m + 'kg', bobX, bobY + 4);
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 10px Segoe UI'; ctx.textAlign = 'center';
+    ctx.fillText(m.toFixed(1) + 'kg', bobX, bobY + 4);
     ctx.textAlign = 'left';
-
-    ctx.fillStyle = '#475569';
-    ctx.font = '12px Segoe UI';
-    ctx.fillText('L = ' + L.toFixed(2) + ' m', (pivotX + bobX) / 2 + 12, (pivotY + bobY) / 2);
 }
 
-function resetPendulum() {
-    simTime = 0;
-}
+btnToggle.addEventListener('click', () => {
+    isRunning = !isRunning;
+    btnToggle.textContent = isRunning ? '⏸ Jeda Ayunan' : '▶ Lanjutkan Ayunan';
+});
 
-inputL.addEventListener('input', resetPendulum);
-inputAngle.addEventListener('input', resetPendulum);
-inputG.addEventListener('change', resetPendulum);
+btnReset.addEventListener('click', () => {
+    inputL.value = 1.00; inputM.value = 2.0; inputAngle.value = 25; inputG.value = 9.8;
+    simTime = 0; isRunning = true; btnToggle.textContent = '⏸ Jeda Ayunan';
+});
+
+if (btnSwStart) {
+    btnSwStart.addEventListener('click', () => { swRunning = !swRunning; });
+}
+if (btnSwReset) {
+    btnSwReset.addEventListener('click', () => {
+        swRunning = false; swElapsed = 0;
+        if (swDisplay) swDisplay.textContent = '00.00 s';
+    });
+}
 
 if (btnNewMission) {
     btnNewMission.addEventListener('click', () => {
-        // Acak target periode antara 1.10 detik hingga 2.70 detik (di gravitasi Bumi)
-        const randomT = (Math.floor(Math.random() * 161) + 110) / 100;
-        targetPeriod = randomT;
+        const targets = new Array(1.20, 1.50, 2.01, 2.45, 2.84, 3.17);
+        targetPeriod = targets[Math.floor(Math.random() * targets.length)];
         missionSolved = false;
-        challengeDesc.innerHTML = 'Atur <strong>Panjang Tali (L)</strong> di gravitasi Bumi (9,8 m/s²) sehingga bandul berayun dengan periode tepat <strong>T = ' + targetPeriod.toFixed(2) + ' detik</strong> (toleransi ±0.05 s).';
+        challengeDesc.innerHTML = 'Atur panjang tali (L) & gravitasi planet agar bandul berayun dengan periode <strong>T = ' + targetPeriod.toFixed(2) + ' detik</strong> (±0.08 s).';
         btnCheckMission.style.display = 'inline-block';
         challengeFeedback.style.display = 'none';
     });
@@ -180,45 +161,19 @@ if (btnNewMission) {
 if (btnCheckMission) {
     btnCheckMission.addEventListener('click', () => {
         if (targetPeriod === null) return;
-        const selisih = Math.abs(currentPeriod - targetPeriod);
-        if (selisih <= 0.05) {
+        if (Math.abs(currentPeriod - targetPeriod) <= 0.08) {
             challengeFeedback.className = 'challenge-feedback feedback-success';
             if (!missionSolved) {
                 missionSolved = true;
                 if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
                 challengeFeedback.textContent = '🎉 TEPAT! Periode bandul ' + currentPeriod.toFixed(2) + ' s sesuai target (+100 Poin)!';
-            } else {
-                challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru untuk soal berikutnya.';
-            }
+            } else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
         } else {
             challengeFeedback.className = 'challenge-feedback feedback-fail';
             challengeFeedback.textContent = '❌ Belum pas! Periode saat ini ' + currentPeriod.toFixed(2) + ' s (Target: ' + targetPeriod.toFixed(2) + ' s).';
         }
     });
 }
-
-btnToggle.addEventListener('click', () => {
-    isSwinging = !isSwinging;
-    btnToggle.textContent = isSwinging ? '⏸ Jeda Ayunan' : '▶ Lanjut Ayunan';
-});
-
-btnReset.addEventListener('click', () => {
-    simTime = 0;
-    isSwinging = true;
-    btnToggle.textContent = '⏸ Jeda Ayunan';
-});
-
-swStart.addEventListener('click', () => {
-    swRunning = !swRunning;
-    swStart.textContent = swRunning ? 'Stop' : 'Mulai / Stop';
-});
-
-swReset.addEventListener('click', () => {
-    swRunning = false;
-    swElapsed = 0;
-    swDisplay.textContent = '00.00 s';
-    swStart.textContent = 'Mulai / Stop';
-});
 
 if (btnFormula) {
     btnFormula.addEventListener('click', () => {
@@ -227,4 +182,4 @@ if (btnFormula) {
     });
 }
 
-requestAnimationFrame(updatePhysicsAndDraw);
+requestAnimationFrame(animatePendulum);
