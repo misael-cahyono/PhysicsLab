@@ -12,7 +12,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <style>
-        /* Hiasan Beranda: Stats Bar, Peringkat Skor & Panduan */
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -84,7 +83,6 @@
 </head>
 <body>
 
-    <!-- Bagian Navigasi Atas (Navbar) -->
     <header class="navbar">
         <div class="container nav-content">
             <div class="logo">
@@ -103,21 +101,12 @@
         </div>
     </header>
 
-    <!-- Bagian Utama -->
     <main class="container">
         <section class="hero">
             <h2>Laboratorium Fisika Virtual SMA Kelas 10</h2>
             <p>Pelajari 6 konsep utama fisika secara visual dan interaktif. Ubah variabel percobaan sesukamu, amati simulasinya secara langsung, dan catat hasil perhitungannya—100% tanpa koneksi internet.</p>
-            
-            <!-- Gambar Ilustrasi Utama -->
-            <div style="margin-top: 1.5rem;">
-                <img src="https://i.pinimg.com/1200x/c7/a9/e2/c7a9e2c4c2c4e226f6e1467e02608d36.jpg" 
-                     alt="Ilustrasi Laboratorium Fisika PhysLab 10" 
-                     style="width: 100%; max-width: 720px; max-height: 300px; object-fit: cover; border-radius: 14px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); border: 2px solid var(--border-color);">
-            </div>
         </section>
 
-        <!-- HIASAN 1: Baris Statistik Fitur -->
         <section class="stats-bar">
             <div class="stat-box">
                 <strong>🧪 6 Modul</strong>
@@ -137,7 +126,6 @@
             </div>
         </section>
 
-        <!-- HIASAN 2: Banner Peringkat Skor Peneliti -->
         <section class="rank-banner">
             <div>
                 <h3 style="margin: 0; font-size: 1.15rem;">🏆 Pencapaian Eksperimen Kamu</h3>
@@ -149,7 +137,6 @@
             </div>
         </section>
 
-        <!-- HIASAN 3: Panduan Singkat 3 Langkah -->
         <section class="steps-grid">
             <div class="step-item">
                 <strong>1. Pilih Ruang Lab</strong>
@@ -165,10 +152,9 @@
             </div>
         </section>
 
-        <!-- Daftar 6 Kartu Modul Praktikum (Grid Simetris 3x2) -->
         <section class="modules-grid">
             
-            <!-- Kartu Modul 1: Gerak Parabola -->
+            <!-- Kartu 1: Gerak Parabola -->
             <article class="card">
                 <div>
                     <div class="card-badge">Kinematika 2D</div>
@@ -185,7 +171,7 @@
                 </div>
             </article>
 
-            <!-- Kartu Modul 2: Hukum Hooke -->
+            <!-- Kartu 2: Hukum Hooke -->
             <article class="card">
                 <div>
                     <div class="card-badge">Elastisitas</div>
@@ -202,7 +188,7 @@
                 </div>
             </article>
 
-            <!-- Kartu Modul 3: Bidang Miring & Gaya Gesek -->
+            <!-- Kartu 3: Bidang Miring -->
             <article class="card">
                 <div>
                     <div class="card-badge">Dinamika (Hukum Newton)</div>
@@ -219,7 +205,7 @@
                 </div>
             </article>
 
-            <!-- Kartu Modul 4: Ayunan Bandul Sederhana -->
+            <!-- Kartu 4: Ayunan Bandul -->
             <article class="card">
                 <div>
                     <div class="card-badge">Getaran Harmonik</div>
@@ -232,11 +218,56 @@
                         <code>T = 2π · √(L / g)</code><br>
                         <code>f = 1 / T</code>
                     </div>
+                    <a href="bandul.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
+            </article>
+
+            <!-- Kartu 5: Kekekalan Energi -->
+                        <!-- Kartu 5: Kekekalan Energi -->
+            <article class="card">
+                <div>
+                    <div class="card-badge">Usaha & Energi</div>
+                    <h3>5. Kekekalan Energi Mekanik</h3>
+                    <p>Amati perubahan Energi Potensial menjadi Energi Kinetik saat kereta meluncur melewati bukit dan lembah lintasan.</p>
+                </div>
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>EM = EP + EK</code><br>
+                        <code>m·g·h + ½·m·v² = Konstan</code>
+                    </div>
+                    <a href="energi.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
+            </article>
+
+            <!-- Kartu 6: Hukum Archimedes -->
+            <article class="card">
+                <div>
+                    <div class="card-badge">Fluida Statis</div>
+                    <h3>6. Lab Hukum Archimedes</h3>
+                    <p>Uji fenomena benda terapung, melayang, dan tenggelam dengan mengatur massa jenis benda, volume, serta jenis zat cair.</p>
+                </div>
+                <div>
+                    <div class="formula-box">
+                        <strong>Rumus Utama:</strong><br>
+                        <code>Fa = ρ_cair · g · V_celup</code><br>
+                        <code>w_semu = w_udara - Fa</code>
+                    </div>
+                    <a href="archimedes.html" class="btn-primary">Mulai Eksperimen →</a>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>PhysLab 10 • Portal Praktikum Fisika SMA Kelas 10 • Berjalan 100% Offline</p>
+        </div>
     </footer>
 
     <script src="lab-tools.js"></script>
     <script>
-        // Menampilkan skor & peringkat otomatis di beranda
         document.addEventListener('DOMContentLoaded', function() {
             const score = parseInt(localStorage.getItem('physlab-score') || '0');
             const homeScore = document.getElementById('home-score');
@@ -254,5 +285,6 @@
                 .catch(function(err) { console.log(err); });
         }
     </script>
-                </body>
-               </html>
+
+</body>
+</html>
