@@ -1,169 +1,173 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Virtual Hukum Hooke & Pegas - PhysLab 10</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="futuristic-home">
+const canvas = document.getElementById('spring-canvas');
+const ctx = canvas.getContext('2d');
 
-    <header class="navbar">
-        <div class="container nav-content">
-            <div class="logo">
-                <span class="logo-icon">⚛️</span>
-                <h1>PhysLab <span>10</span></h1>
-            </div>
-            <nav style="flex-wrap: wrap;">
-                <a href="index.html">Beranda</a>
-                <a href="parabola.html">Parabola</a>
-                <a href="pegas.html" class="active">Pegas</a>
-                <a href="bidang-miring.html">Bidang Miring</a>
-                <a href="bandul.html">Bandul</a>
-                <a href="energi.html">Energi</a>
-                <a href="archimedes.html">Archimedes</a>
-                <a href="listrik.html">Listrik</a>
-                <a href="elektromagnet.html">Elektromagnet</a>
-                <a href="faraday.html">Faraday</a>
-            </nav>
-        </div>
-    </header>
+const inputK = document.getElementById('input-k');
+const inputM = document.getElementById('input-m');
+const inputMode = document.getElementById('input-mode');
 
-    <main class="container">
-        <div style="margin-bottom: 1.5rem;">
-            <h2>2. Lab Virtual Hukum Hooke & Getaran Pegas</h2>
-            <p style="color: #94a3b8;">Uji hubungan gaya tarik beban dan konstanta kekakuan pegas terhadap pertambahan panjang serta energi potensial elastis.</p>
-        </div>
+const valK = document.getElementById('val-k');
+const valM = document.getElementById('val-m');
 
-        <div class="sim-layout">
-            
-            <aside class="control-panel">
-                <h3 style="margin-bottom: 1rem;">Variabel Pegas</h3>
+const outF = document.getElementById('out-f');
+const outDx = document.getElementById('out-dx');
+const outEp = document.getElementById('out-ep');
+const outPeriod = document.getElementById('out-period');
 
-                <div class="control-group">
-                    <label>
-                        <span>Konstanta Pegas (k)</span>
-                        <span id="val-k" style="color: #38bdf8;">50 N/m</span>
-                    </label>
-                    <input type="range" id="input-k" min="20" max="200" step="10" value="50">
-                </div>
+const expCalc = document.getElementById('exp-calc');
+const expReason = document.getElementById('exp-reason');
 
-                <div class="control-group">
-                    <label>
-                        <span>Massa Beban (m)</span>
-                        <span id="val-m" style="color: #38bdf8;">2.0 kg</span>
-                    </label>
-                    <input type="range" id="input-m" min="0.5" max="10" step="0.5" value="2.0">
-                </div>
+const btnReset = document.getElementById('btn-reset');
+const btnFormula = document.getElementById('btn-formula');
+const formulaPanel = document.getElementById('formula-panel');
 
-                <div class="control-group">
-                    <label for="input-mode">Mode Simulasi</label>
-                    <select id="input-mode">
-                        <option value="static" selected>Mode Statis (Diam Setimbang)</option>
-                        <option value="oscillate">Mode Dinamis (Getaran Harmonik)</option>
-                    </select>
-                </div>
+const btnNewMission = document.getElementById('btn-new-mission');
+const btnCheckMission = document.getElementById('btn-check-mission');
+const challengeDesc = document.getElementById('challenge-desc');
+const challengeFeedback = document.getElementById('challenge-feedback');
 
-                <div class="btn-group">
-                    <button id="btn-reset" class="btn-secondary">Reset</button>
-                    <button id="btn-formula" class="btn-primary" style="flex: 1;">Lihat Rumus</button>
-                </div>
+let k = 50, m = 2.0, mode = 'static';
+const g = 9.8;
+let time = 0, currentDx = 0.392, targetDx = null, missionSolved = false;
 
-                <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
-                    <strong>Rumus Hukum Hooke:</strong><br>
-                    • Gaya Pegas: <code>F = m · g = k · Δx</code><br>
-                    • Pertambahan Panjang: <code>Δx = (m · g) / k</code><br>
-                    • Energi Potensial Pegas: <code>Ep = ½ · k · Δx²</code>
-                </div>
-            </aside>
+function animateSpring() {
+    k = parseFloat(inputK.value);
+    m = parseFloat(inputM.value);
+    mode = inputMode.value;
 
-            <section class="visual-panel">
-                
-                <div class="challenge-box">
-                    <div class="challenge-header">
-                        <h4>🎯 Misi Tantangan: Kalibrasi Regangan Pegas!</h4>
-                        <span id="total-score" class="score-badge">0 Poin</span>
-                    </div>
-                    <p id="challenge-desc" class="challenge-text">
-                        Klik tombol "Buat Misi Baru" untuk mendapatkan target pertambahan panjang pegas!
-                    </p>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
-                        <button id="btn-check-mission" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem; display: none;">✅ Cek Jawaban</button>
-                    </div>
-                    <div id="challenge-feedback" class="challenge-feedback"></div>
-                </div>
+    valK.textContent = k + ' N/m';
+    valM.textContent = m.toFixed(1) + ' kg';
 
-                <canvas id="spring-canvas" width="650" height="360"></canvas>
+    const F = m * g;
+    const dx = F / k;
+    const ep = 0.5 * k * dx * dx;
+    const omega = Math.sqrt(k / m);
+    const period = (2 * Math.PI) / omega;
+    currentDx = dx;
 
-                <div class="export-bar">
-                    <button class="btn-export" onclick="downloadCanvasImage('spring-canvas', 'laporan-hukum-hooke')">
-                        📷 Simpan Gambar Pegas (.PNG)
-                    </button>
-                </div>
+    outF.textContent = F.toFixed(2) + ' N';
+    outDx.textContent = dx.toFixed(2) + ' m (' + (dx * 100).toFixed(1) + ' cm)';
+    outEp.textContent = ep.toFixed(2) + ' J';
+    outPeriod.textContent = period.toFixed(2) + ' s';
 
-                <div class="output-grid">
-                    <div class="output-item">
-                        <span>Gaya Tarik Beban (F)</span>
-                        <strong id="out-f">19.60 N</strong>
-                    </div>
-                    <div class="output-item">
-                        <span>Pertambahan Panjang (Δx)</span>
-                        <strong id="out-dx" style="color: #38bdf8;">0.39 m (39.2 cm)</strong>
-                    </div>
-                    <div class="output-item">
-                        <span>Energi Potensial (Ep)</span>
-                        <strong id="out-ep" style="color: #4ade80;">3.84 J</strong>
-                    </div>
-                    <div class="output-item">
-                        <span>Periode Getaran (T)</span>
-                        <strong id="out-period">1.26 s</strong>
-                    </div>
-                </div>
+    if (expCalc && expReason) {
+        expCalc.innerHTML =
+            '1. Gaya Tarik Beban (F) = <code>m · g = ' + m.toFixed(1) + ' kg × 9,8 m/s² = ' + F.toFixed(2) + ' N</code><br>' +
+            '2. Pertambahan Panjang (Δx) = <code>F / k = ' + F.toFixed(2) + ' / ' + k + ' = ' + dx.toFixed(2) + ' m (' + (dx * 100).toFixed(1) + ' cm)</code><br>' +
+            '3. Energi Potensial (Ep) = <code>½ · k · Δx² = 0,5 × ' + k + ' × ' + dx.toFixed(2) + '² = ' + ep.toFixed(2) + ' Joule</code>';
 
-                <!-- KOTAK ANALISIS & PENJELASAN OTOMATIS -->
-                <div class="explanation-box">
-                    <h4>💡 Analisis & Penjelasan Otomatis</h4>
-                    <div class="exp-section">
-                        <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
-                        <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
-                    </div>
-                    <div class="exp-section">
-                        <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
-                        <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
-                    </div>
-                </div>
-            </section>
+        if (k >= 120) {
+            expReason.textContent = 'Konstanta pegas bernilai besar (' + k + ' N/m), artinya pegas sangat kaku sehingga gaya tarik ' + F.toFixed(1) + ' N hanya mampu meregangkannya sedikit (' + (dx * 100).toFixed(1) + ' cm).';
+        } else if (k <= 40) {
+            expReason.textContent = 'Konstanta pegas bernilai kecil (' + k + ' N/m), artinya pegas bersifat lentur/lunak sehingga beban ' + m.toFixed(1) + ' kg mudah menariknya memanjang sejauh ' + (dx * 100).toFixed(1) + ' cm.';
+        } else {
+            expReason.textContent = 'Sesuai Hukum Hooke (Δx = F / k), pertambahan panjang pegas berbanding lurus dengan berat beban (' + F.toFixed(1) + ' N) dan berbanding terbalik dengan tingkat kekakuan pegas (' + k + ' N/m).';
+        }
+    }
 
-        </div>
+    let extraOscillation = 0;
+    if (mode === 'oscillate') {
+        time += 0.03;
+        extraOscillation = Math.sin(omega * time) * Math.min(dx * 55, 45);
+    } else {
+        time = 0;
+    }
 
-        <section class="lks-panel">
-            <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Hukum Hooke</h3>
-            <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
-            <ul class="lks-list">
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 1 (Hukum Hooke):</strong> Pada konstanta <code>k = 50 N/m</code>, ubah massa beban dari <code>1 kg</code> menjadi <code>2 kg</code> lalu <code>4 kg</code>. Amati apakah pertambahan panjang (Δx) bertambah secara sebanding (linear)!</span>
-                </li>
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 2 (Kekakuan Pegas):</strong> Pada massa tetap <code>3 kg</code>, naikkan konstanta <code>k</code> dari <code>30 N/m</code> ke <code>150 N/m</code>. Amati perubahan panjang pegas dan energi potensialnya!</span>
-                </li>
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 3 (Getaran Harmonik):</strong> Ubah <strong>Mode Simulasi</strong> menjadi <em>Mode Dinamis</em> dan amati pengaruh massa beban terhadap kecepatan naik-turun pegas!</span>
-                </li>
-            </ul>
-        </section>
-    </main>
+    drawSpringSystem(dx, extraOscillation);
+    requestAnimationFrame(animateSpring);
+}
+function drawSpringSystem(dx, oscOffset) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    <footer>
-        <div class="container">
-            <p>PhysLab 10 • Modul Elastisitas & Hukum Hooke</p>
-        </div>
-    </footer>
+    const anchorX = 280, anchorY = 30;
+    const baseLength = 90;
+    const stretchPx = Math.min(dx * 110, 160);
+    const totalLength = baseLength + stretchPx + oscOffset;
 
-    <script src="lab-tools.js"></script>
-    <script src="pegas.js"></script>
-</body>
-</html>
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(anchorX - 90, anchorY - 12, 180, 12);
+
+    const rulerX = 130;
+    ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(rulerX, anchorY); ctx.lineTo(rulerX, canvas.height - 25); ctx.stroke();
+
+    ctx.fillStyle = '#475569'; ctx.font = '11px Segoe UI';
+    for (let cm = 0; cm <= 250; cm += 25) {
+        const ry = anchorY + baseLength + (cm / 100) * 110;
+        if (ry < canvas.height - 25) {
+            ctx.fillRect(rulerX - 6, ry, 12, 1.5);
+            ctx.fillText(cm + ' cm', rulerX - 52, ry + 4);
+        }
+    }
+
+    ctx.save(); ctx.globalAlpha = 0.5; ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(rulerX, anchorY + baseLength); ctx.lineTo(anchorX + 60, anchorY + baseLength); ctx.stroke();
+    ctx.restore();
+
+    const coils = 14;
+    const stepY = totalLength / coils;
+    ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(anchorX, anchorY);
+    for (let i = 1; i < coils; i++) {
+        const offsetX = (i % 2 === 0) ? -22 : 22;
+        ctx.lineTo(anchorX + offsetX, anchorY + i * stepY);
+    }
+    ctx.lineTo(anchorX, anchorY + totalLength);
+    ctx.stroke();
+
+    const boxW = 54 + m * 3, boxH = 44 + m * 2;
+    const boxY = anchorY + totalLength;
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(anchorX - boxW / 2, boxY, boxW, boxH);
+    ctx.strokeStyle = '#9a3412'; ctx.lineWidth = 2;
+    ctx.strokeRect(anchorX - boxW / 2, boxY, boxW, boxH);
+
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Segoe UI'; ctx.textAlign = 'center';
+    ctx.fillText(m.toFixed(1) + ' kg', anchorX, boxY + boxH / 2 + 4);
+    ctx.textAlign = 'left';
+
+    ctx.save(); ctx.globalAlpha = 0.6; ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(rulerX, boxY); ctx.lineTo(anchorX - boxW / 2, boxY); ctx.stroke();
+    ctx.restore();
+}
+
+btnReset.addEventListener('click', () => {
+    inputK.value = 50; inputM.value = 2.0; inputMode.value = 'static'; time = 0;
+});
+
+if (btnNewMission) {
+    btnNewMission.addEventListener('click', () => {
+        const targets = new Array(0.20, 0.35, 0.49, 0.65, 0.80, 0.98);
+        targetDx = targets[Math.floor(Math.random() * targets.length)];
+        missionSolved = false;
+        challengeDesc.innerHTML = 'Atur konstanta pegas (k) & massa beban (m) agar pegas meregang sejauh <strong>Δx = ' + targetDx.toFixed(2) + ' m</strong> (±0.03 m).';
+        btnCheckMission.style.display = 'inline-block';
+        challengeFeedback.style.display = 'none';
+    });
+}
+
+if (btnCheckMission) {
+    btnCheckMission.addEventListener('click', () => {
+        if (targetDx === null) return;
+        if (Math.abs(currentDx - targetDx) <= 0.03) {
+            challengeFeedback.className = 'challenge-feedback feedback-success';
+            if (!missionSolved) {
+                missionSolved = true;
+                if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
+                challengeFeedback.textContent = '🎉 TEPAT! Pertambahan panjang ' + currentDx.toFixed(2) + ' m sesuai target (+100 Poin)!';
+            } else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
+        } else {
+            challengeFeedback.className = 'challenge-feedback feedback-fail';
+            challengeFeedback.textContent = '❌ Belum pas! Regangan saat ini ' + currentDx.toFixed(2) + ' m (Target: ' + targetDx.toFixed(2) + ' m).';
+        }
+    });
+}
+
+if (btnFormula) {
+    btnFormula.addEventListener('click', () => {
+        formulaPanel.style.display = formulaPanel.style.display === 'none' ? 'block' : 'none';
+        btnFormula.textContent = formulaPanel.style.display === 'none' ? 'Lihat Rumus' : 'Sembunyikan Rumus';
+    });
+}
+
+animateSpring();
