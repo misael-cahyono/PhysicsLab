@@ -233,3 +233,44 @@ function drawBulb(x, y, resistance, power, isOverload) {
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.moveTo(x - 8, y - 26); ctx.lineTo(x + 8, y - 10);
+
+        if (btnNewMission) {
+    btnNewMission.addEventListener('click', () => {
+        const choices = new Array(0.60, 0.90, 1.20, 1.50, 1.80, 2.00);
+        targetI = choices[Math.floor(Math.random() * choices.length)];
+        missionSolved = false;
+        challengeDesc.innerHTML = 'Rakit rangkaian dan atur tegangan baterai agar menghasilkan kuat arus <strong>I = ' + targetI.toFixed(2) + ' Ampere</strong> tanpa membuat lampu putus (toleransi ±0.05 A).';
+        btnCheckMission.style.display = 'inline-block';
+        challengeFeedback.style.display = 'none';
+    });
+}
+
+if (btnCheckMission) {
+    btnCheckMission.addEventListener('click', () => {
+        if (targetI === null) return;
+        const selisih = Math.abs(currentI - targetI);
+        if (selisih <= 0.05 && currentI > 0) {
+            challengeFeedback.className = 'challenge-feedback feedback-success';
+            if (!missionSolved) {
+                missionSolved = true;
+                if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
+                challengeFeedback.textContent = '🎉 TEPAT! Kuat arus rangkaian ' + currentI.toFixed(2) + ' A sesuai target (+100 Poin)!';
+            } else {
+                challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru untuk soal berikutnya.';
+            }
+        } else {
+            challengeFeedback.className = 'challenge-feedback feedback-fail';
+            challengeFeedback.textContent = '❌ Belum pas! Kuat arus saat ini ' + currentI.toFixed(2) + ' A (Target: ' + targetI.toFixed(2) + ' A).';
+        }
+    });
+}
+
+if (btnFormula) {
+    btnFormula.addEventListener('click', () => {
+        formulaPanel.style.display = formulaPanel.style.display === 'none' ? 'block' : 'none';
+        btnFormula.textContent = formulaPanel.style.display === 'none' ? 'Lihat Rumus' : 'Sembunyikan Rumus';
+    });
+}
+
+updateSimulation();
+
