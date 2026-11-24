@@ -496,4 +496,111 @@ footer {
     text-decoration: line-through;
     color: var(--text-secondary);
 }
+/* =========================================
+   8. TEMA GLOBAL DARK GLASSMORPHISM FUTURISTIK
+   ========================================= */
+body.futuristic-home {
+    background-color: #080c17;
+    background-image: 
+        radial-gradient(circle at 80% 15%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 15% 70%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
+        radial-gradient(#ffffff 1px, transparent 1px),
+        radial-gradient(rgba(147, 197, 253, 0.6) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 90px 90px, 140px 140px;
+    background-position: 0 0, 0 0, 0 0, 45px 65px;
+    color: #f8fafc;
+}
+
+.futuristic-home .navbar {
+    background-color: rgba(11, 17, 32, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+}
+.futuristic-home .logo h1 { color: #ffffff; }
+.futuristic-home nav a { color: #cbd5e1; }
+.futuristic-home nav a:hover,
+.futuristic-home nav a.active {
+    color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.15);
+}
+
+/* Panel Kontrol & Visual di Halaman Simulasi */
+.futuristic-home .control-panel,
+.futuristic-home .visual-panel,
+.futuristic-home .lks-panel {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    color: #f1f5f9;
+}
+
+.futuristic-home h2,
+.futuristic-home h3,
+.futuristic-home h4 {
+    color: #f8fafc;
+}
+
+.futuristic-home .control-group label {
+    color: #cbd5e1;
+}
+
+.futuristic-home select,
+.futuristic-home input[type="number"] {
+    background-color: rgba(8, 12, 23, 0.85);
+    color: #f8fafc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+/* Kotak Output, Misi, LKS & Tabel */
+.futuristic-home .output-item,
+.futuristic-home .lks-list li,
+.futuristic-home .stopwatch-box {
+    background-color: rgba(8, 12, 23, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #e2e8f0;
+}
+
+.futuristic-home .output-item span {
+    color: #94a3b8;
+}
+
+.futuristic-home .challenge-box {
+    background-color: rgba(37, 99, 235, 0.12);
+    border: 1.5px dashed #38bdf8;
+}
+
+.futuristic-home .challenge-text {
+    color: #e2e8f0;
+}
+
+.futuristic-home .btn-secondary,
+.futuristic-home .btn-export {
+    background-color: rgba(15, 23, 42, 0.85);
+    color: #e2e8f0;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.futuristic-home .btn-secondary:hover,
+.futuristic-home .btn-export:hover {
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+/* Kanvas Simulasi Tetap Putih Cerah Agar Grafik & Vektor Terbaca Jelas */
+.futuristic-home canvas {
+    background-color: #ffffff;
+    border: 2px solid rgba(56, 189, 248, 0.45);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.25);
+}
+
+.futuristic-home .history-table td {
+    border-color: rgba(56, 189, 248, 0.2);
+    color: #e2e8f0;
+}
+
+.futuristic-home footer {
+    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    color: #64748b;
+}
 
