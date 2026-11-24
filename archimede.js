@@ -272,11 +272,12 @@ if (btnCheckMission) {
     });
 }
 
-inputRhoObj.value = 600;
-presetMaterial.value = 'custom';
-inputVol.value = 0.05;
-inputFluid.value = 1000;
-});
+   inputRhoObj.value = 600;
+   presetMaterial.value = 'custom';
+   inputVol.value = 0.05;
+   inputFluid.value = 1000;
+ });
+
 if (btnFormula) {
 btnFormula.addEventListener('click', () => {
 formulaPanel.style.display = formulaPanel.style.display === 'none' ? 'block' : 'none';
