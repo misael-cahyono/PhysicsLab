@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,24 +15,23 @@
             font-size: 0.95rem;
         }
         .status-terapung {
-            background-color: #f0f9ff;
-            color: #0284c7;
-            border: 1px solid #bae6fd;
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
         }
         .status-melayang {
-            background-color: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
+            background-color: rgba(22, 163, 74, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.4);
         }
         .status-tenggelam {
-            background-color: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.5);
         }
     </style>
 </head>
 <body class="futuristic-home">
-
 
     <header class="navbar">
         <div class="container nav-content">
@@ -40,7 +39,7 @@
                 <span class="logo-icon">⚛️</span>
                 <h1>PhysLab <span>10</span></h1>
             </div>
-            <nav>
+            <nav style="flex-wrap: wrap;">
                 <a href="index.html">Beranda</a>
                 <a href="parabola.html">Parabola</a>
                 <a href="pegas.html">Pegas</a>
@@ -48,6 +47,9 @@
                 <a href="bandul.html">Bandul</a>
                 <a href="energi.html">Energi</a>
                 <a href="archimedes.html" class="active">Archimedes</a>
+                <a href="listrik.html">Listrik</a>
+                <a href="elektromagnet.html">Elektromagnet</a>
+                <a href="faraday.html">Faraday</a>
             </nav>
         </div>
     </header>
@@ -55,25 +57,22 @@
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
             <h2>6. Lab Virtual Fluida Statis & Hukum Archimedes</h2>
-            <p style="color: var(--text-secondary);">Uji fenomena benda terapung, melayang, dan tenggelam dengan mengatur massa jenis benda, volume benda, dan jenis zat cair.</p>
+            <p style="color: #94a3b8;">Uji fenomena benda terapung, melayang, dan tenggelam dengan mengatur massa jenis benda, volume benda, dan jenis zat cair.</p>
         </div>
 
         <div class="sim-layout">
             
-            <!-- PANEL KIRI: Kontrol Variabel Pengguna -->
             <aside class="control-panel">
                 <h3 style="margin-bottom: 1rem;">Variabel Percobaan</h3>
 
-                <!-- Input Massa Jenis Benda -->
                 <div class="control-group">
                     <label>
                         <span>Massa Jenis Benda (ρ_benda)</span>
-                        <span id="val-rho-obj" style="color: var(--accent);">600 kg/m³</span>
+                        <span id="val-rho-obj" style="color: #38bdf8;">600 kg/m³</span>
                     </label>
                     <input type="range" id="input-rho-obj" min="200" max="3000" step="50" value="600">
                 </div>
 
-                <!-- Pilihan Bahan Benda Cepat -->
                 <div class="control-group">
                     <label for="preset-material">Contoh Bahan Benda</label>
                     <select id="preset-material">
@@ -86,16 +85,14 @@
                     </select>
                 </div>
 
-                <!-- Input Volume Benda -->
                 <div class="control-group">
                     <label>
                         <span>Volume Benda (V)</span>
-                        <span id="val-vol" style="color: var(--accent);">0.05 m³</span>
+                        <span id="val-vol" style="color: #38bdf8;">0.05 m³</span>
                     </label>
                     <input type="range" id="input-vol" min="0.01" max="0.10" step="0.01" value="0.05">
                 </div>
 
-                <!-- Pilihan Jenis Cairan -->
                 <div class="control-group">
                     <label for="input-fluid">Jenis Zat Cair (ρ_cair)</label>
                     <select id="input-fluid">
@@ -106,26 +103,21 @@
                     </select>
                 </div>
 
-                <!-- Tombol Aksi -->
                 <div class="btn-group">
                     <button id="btn-reset" class="btn-secondary">Reset</button>
                     <button id="btn-formula" class="btn-primary" style="flex: 1;">Lihat Rumus</button>
                 </div>
 
-                <!-- Kotak Rumus -->
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
                     <strong>Rumus Hukum Archimedes:</strong><br>
                     • Gaya Apung: <code>Fa = ρ_cair · g · V_celup</code><br>
                     • Berat di Udara: <code>w = ρ_benda · V · g</code><br>
-                    • Berat di Cairan: <code>w_semu = w - Fa</code><br>
-                    <em>Terapung: ρ_benda &lt; ρ_cair | Tenggelam: ρ_benda &gt; ρ_cair</em>
+                    • Berat di Cairan: <code>w_semu = w - Fa</code>
                 </div>
             </aside>
 
-            <!-- PANEL KANAN: Misi Tantangan, Tangki Cairan & Output -->
             <section class="visual-panel">
                 
-                <!-- KOTAK MISI TANTANGAN -->
                 <div class="challenge-box">
                     <div class="challenge-header">
                         <h4>🎯 Misi Tantangan: Gaya Apung Target!</h4>
@@ -141,21 +133,18 @@
                     <div id="challenge-feedback" class="challenge-feedback"></div>
                 </div>
 
-                <!-- Indikator Status Benda -->
                 <div id="status-box" class="status-badge status-terapung">
                     Status: Benda TERAPUNG (60% Volume Terendam)
                 </div>
 
-                <canvas id="archimedes-canvas" width="650" height="380"></canvas>
+                <canvas id="archimedes-canvas" width="650" height="360"></canvas>
 
-                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
                 <div class="export-bar">
                     <button class="btn-export" onclick="downloadCanvasImage('archimedes-canvas', 'laporan-hukum-archimedes')">
                         📷 Simpan Gambar Percobaan (.PNG)
                     </button>
                 </div>
 
-                <!-- Kartu Output Real-Time -->
                 <div class="output-grid">
                     <div class="output-item">
                         <span>Berat di Udara (w)</span>
@@ -163,41 +152,49 @@
                     </div>
                     <div class="output-item">
                         <span>Gaya Apung (Fa)</span>
-                        <strong id="out-fa" style="color: #16a34a;">294.0 N</strong>
+                        <strong id="out-fa" style="color: #4ade80;">294.0 N</strong>
                     </div>
                     <div class="output-item">
                         <span>Berat Semu di Cairan</span>
-                        <strong id="out-wsemu" style="color: #ea580c;">0.0 N</strong>
+                        <strong id="out-wsemu" style="color: #f87171;">0.0 N</strong>
                     </div>
                     <div class="output-item">
                         <span>Volume Terendam</span>
-                        <strong id="out-vcelup">0.030 m³ (60%)</strong>
+                        <strong id="out-vcelup" style="color: #38bdf8;">0.030 m³ (60%)</strong>
+                    </div>
+                </div>
+
+                <!-- KOTAK ANALISIS & PENJELASAN OTOMATIS -->
+                <div class="explanation-box">
+                    <h4>💡 Analisis & Penjelasan Otomatis</h4>
+                    <div class="exp-section">
+                        <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
+                        <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
+                    </div>
+                    <div class="exp-section">
+                        <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
+                        <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
                     </div>
                 </div>
             </section>
 
         </div>
 
-        <!-- PANEL PANDUAN LKS -->
         <section class="lks-panel">
             <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Hukum Archimedes</h3>
             <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
             <ul class="lks-list">
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 1 (Syarat Benda Melayang):</strong> Pilih cairan <strong>Air Tawar (1000 kg/m³)</strong>, lalu pilih bahan <strong>Plastik Khusus (1000 kg/m³)</strong>. Amati posisi balok di dalam tangki dan nilai <strong>Berat Semu di Cairan</strong>!</span>
+                    <span><strong>Percobaan 1 (Syarat Benda Melayang):</strong> Pilih cairan <strong>Air Tawar (1000 kg/m³)</strong>, lalu pilih bahan <strong>Plastik Khusus (1000 kg/m³)</strong>. Amati posisi balok dan nilai <strong>Berat Semu di Cairan</strong>!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 2 (Pengaruh Jenis Cairan):</strong> Atur massa jenis benda menjadi <code>1200 kg/m³</code> di dalam <strong>Air Tawar</strong> (benda tenggelam). Lalu ganti jenis cairan menjadi <strong>Madu Murni (1420 kg/m³)</strong> dan amati apa yang terjadi!</span>
+                    <span><strong>Percobaan 2 (Pengaruh Jenis Cairan):</strong> Atur massa jenis benda menjadi <code>1200 kg/m³</code> di dalam <strong>Air Tawar</strong>, lalu ubah cairan menjadi <strong>Madu Murni (1420 kg/m³)</strong>!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 3 (Fenomena Gunung Es):</strong> Pilih bahan <strong>Es Batu (920 kg/m³)</strong> dan cairan <strong>Air Laut (1030 kg/m³)</strong>. Perhatikan berapa persen bagian es batu yang terendam di bawah permukaan air laut!</span>
-                </li>
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik <strong>"Buat Misi Baru"</strong>, atur volume/massa jenis/cairan hingga menghasilkan Gaya Apung (Fa) sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> (+100 Poin).</span>
+                    <span><strong>Percobaan 3 (Fenomena Gunung Es):</strong> Pilih bahan <strong>Es Batu (920 kg/m³)</strong> dan cairan <strong>Air Laut (1030 kg/m³)</strong>. Amati persentase bagian es yang terendam!</span>
                 </li>
             </ul>
         </section>
