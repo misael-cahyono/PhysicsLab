@@ -15,9 +15,13 @@ const outFa = document.getElementById('out-fa');
 const outWsemu = document.getElementById('out-wsemu');
 const outVcelup = document.getElementById('out-vcelup');
 
+const expCalc = document.getElementById('exp-calc');
+const expReason = document.getElementById('exp-reason');
+
 const btnReset = document.getElementById('btn-reset');
 const btnFormula = document.getElementById('btn-formula');
 const formulaPanel = document.getElementById('formula-panel');
+
 const btnNewMission = document.getElementById('btn-new-mission');
 const btnCheckMission = document.getElementById('btn-check-mission');
 const challengeDesc = document.getElementById('challenge-desc');
@@ -28,7 +32,7 @@ const g = 9.8;
 let currentFa = 294.0, targetFa = null, missionSolved = false;
 let currentBlockY = 140, targetBlockY = 140;
 
-const tankX = 160, tankY = 70, tankW = 330, tankH = 260, baseFluidTopY = 140;
+const tankX = 160, tankY = 65, tankW = 330, tankH = 250, baseFluidTopY = 135;
 
 function calculateAndDraw() {
     rhoObj = parseFloat(inputRhoObj.value);
@@ -40,20 +44,22 @@ function calculateAndDraw() {
 
     const weight = rhoObj * volume * g;
     let submergedRatio = 1.0;
-    const boxSize = 55 + (volume * 450);
+    const boxSize = 55 + (volume * 420);
     const centerX = tankX + (tankW / 2);
 
     if (rhoObj < rhoFluid) {
         submergedRatio = rhoObj / rhoFluid;
         statusBox.className = 'status-badge status-terapung';
         statusBox.textContent = 'Status: Benda TERAPUNG (' + (submergedRatio * 100).toFixed(0) + '% Volume Terendam)';
-        const surfaceY = baseFluidTopY - ((volume * submergedRatio) * 220);
+        const surfaceY = baseFluidTopY - ((volume * submergedRatio) * 210);
         targetBlockY = surfaceY - boxSize * (1 - submergedRatio);
     } else if (rhoObj === rhoFluid) {
+        submergedRatio = 1.0;
         statusBox.className = 'status-badge status-melayang';
         statusBox.textContent = 'Status: Benda MELAYANG Seimbang (100% Terendam)';
-        targetBlockY = tankY + (tankH / 2) - (boxSize / 2) + 25;
+        targetBlockY = tankY + (tankH / 2) - (boxSize / 2) + 20;
     } else {
+        submergedRatio = 1.0;
         statusBox.className = 'status-badge status-tenggelam';
         statusBox.textContent = 'Status: Benda TENGGELAM di Dasar Tangki (100% Terendam)';
         targetBlockY = (tankY + tankH) - boxSize - 4;
@@ -61,34 +67,47 @@ function calculateAndDraw() {
 
     const vSubmerged = volume * submergedRatio;
     const buoyantForce = rhoFluid * g * vSubmerged;
+    const apparentWeight = Math.max(0, weight - buoyantForce);
     currentFa = buoyantForce;
 
     outW.textContent = weight.toFixed(1) + ' N';
     outFa.textContent = buoyantForce.toFixed(1) + ' N';
-    outWsemu.textContent = Math.max(0, weight - buoyantForce).toFixed(1) + ' N';
+    outWsemu.textContent = apparentWeight.toFixed(1) + ' N';
     outVcelup.textContent = vSubmerged.toFixed(3) + ' m³ (' + (submergedRatio * 100).toFixed(0) + '%)';
+
+    if (expCalc && expReason) {
+        expCalc.innerHTML =
+            '1. Berat di Udara (w) = <code>ρ_benda · V · g = ' + rhoObj + ' × ' + volume.toFixed(2) + ' × 9,8 = ' + weight.toFixed(1) + ' N</code><br>' +
+            '2. Gaya Apung (Fa) = <code>ρ_cair · g · V_celup = ' + rhoFluid + ' × 9,8 × ' + vSubmerged.toFixed(3) + ' = ' + buoyantForce.toFixed(1) + ' N</code><br>' +
+            '3. Berat Semu di Cairan (w_semu) = <code>w - Fa = ' + weight.toFixed(1) + ' - ' + buoyantForce.toFixed(1) + ' = ' + apparentWeight.toFixed(1) + ' N</code>';
+
+        if (rhoObj < rhoFluid) {
+            expReason.textContent = 'Benda TERAPUNG karena massa jenis benda (' + rhoObj + ' kg/m³) lebih kecil daripada massa jenis cairan (' + rhoFluid + ' kg/m³). Gaya apung dari ' + (submergedRatio * 100).toFixed(0) + '% bagian benda yang terendam sudah cukup untuk menopang seluruh berat benda (w_semu = 0 N).';
+        } else if (rhoObj === rhoFluid) {
+            expReason.textContent = 'Benda MELAYANG seimbang di tengah cairan karena massa jenis benda sama persis dengan massa jenis cairan (' + rhoObj + ' kg/m³). Seluruh volume benda terendam sehingga gaya apung (Fa) tepat menyamai gaya berat (w).';
+        } else {
+            expReason.textContent = 'Benda TENGGELAM ke dasar tangki karena massa jenis benda (' + rhoObj + ' kg/m³) lebih besar daripada massa jenis cairan (' + rhoFluid + ' kg/m³). Gaya berat benda (' + weight.toFixed(1) + ' N) lebih besar daripada gaya apung maksimum (' + buoyantForce.toFixed(1) + ' N).';
+        }
+    }
 
     currentBlockY += (targetBlockY - currentBlockY) * 0.12;
     drawTankAndObject(centerX, currentBlockY, boxSize, vSubmerged, weight, buoyantForce);
     requestAnimationFrame(calculateAndDraw);
 }
-
 function drawTankAndObject(centerX, blockY, boxSize, vSubmerged, weight, buoyantForce) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const surfaceY = baseFluidTopY - (vSubmerged * 220);
+    const surfaceY = baseFluidTopY - (vSubmerged * 210);
 
     let fluidColor = 'rgba(56, 189, 248, 0.45)', fluidName = 'Air Tawar (1000 kg/m³)';
     if (rhoFluid === 800) { fluidColor = 'rgba(250, 204, 21, 0.45)'; fluidName = 'Minyak Goreng (800 kg/m³)'; }
     else if (rhoFluid === 1030) { fluidColor = 'rgba(14, 165, 233, 0.55)'; fluidName = 'Air Laut (1030 kg/m³)'; }
     else if (rhoFluid === 1420) { fluidColor = 'rgba(217, 119, 6, 0.55)'; fluidName = 'Madu Murni (1420 kg/m³)'; }
 
-    // Garis acuan awal
     ctx.save(); ctx.globalAlpha = 0.6; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(tankX - 35, baseFluidTopY); ctx.lineTo(tankX, baseFluidTopY); ctx.stroke();
     ctx.restore();
     ctx.fillStyle = '#64748b'; ctx.font = '11px Segoe UI'; ctx.fillText('Awal', tankX - 65, baseFluidTopY + 4);
 
-    // Balok benda
     const blockX = centerX - (boxSize / 2);
     ctx.fillStyle = rhoObj < 1000 ? '#d97706' : '#475569';
     ctx.fillRect(blockX, blockY, boxSize, boxSize);
@@ -98,13 +117,11 @@ function drawTankAndObject(centerX, blockY, boxSize, vSubmerged, weight, buoyant
     ctx.fillText(rhoObj + ' kg/m³', centerX, blockY + (boxSize / 2) + 4);
     ctx.textAlign = 'left';
 
-    // Cairan & permukaan
     ctx.fillStyle = fluidColor;
     ctx.fillRect(tankX, surfaceY, tankW, (tankY + tankH) - surfaceY);
     ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(tankX, surfaceY); ctx.lineTo(tankX + tankW, surfaceY); ctx.stroke();
 
-    // Dinding tangki kaca
     ctx.strokeStyle = '#334155'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.moveTo(tankX, tankY); ctx.lineTo(tankX, tankY + tankH);
     ctx.lineTo(tankX + tankW, tankY + tankH); ctx.lineTo(tankX + tankW, tankY); ctx.stroke();
@@ -112,7 +129,6 @@ function drawTankAndObject(centerX, blockY, boxSize, vSubmerged, weight, buoyant
     ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12px Segoe UI';
     ctx.fillText(fluidName, tankX + 12, tankY + tankH - 10);
 
-    // Panah vektor Fa & w
     const midY = blockY + (boxSize / 2);
     drawArrow(centerX - 14, midY, centerX - 14, midY - Math.min(25 + buoyantForce * 0.08, 85), '#16a34a', 'Fa = ' + buoyantForce.toFixed(0) + 'N', true);
     drawArrow(centerX + 14, midY, centerX + 14, midY + Math.min(25 + weight * 0.08, 85), '#dc2626', 'w = ' + weight.toFixed(0) + 'N', false);
@@ -145,16 +161,13 @@ if (btnNewMission) {
 if (btnCheckMission) {
     btnCheckMission.addEventListener('click', () => {
         if (targetFa === null) return;
-        const selisih = Math.abs(currentFa - targetFa);
-        if (selisih <= 25) {
+        if (Math.abs(currentFa - targetFa) <= 25) {
             challengeFeedback.className = 'challenge-feedback feedback-success';
             if (!missionSolved) {
                 missionSolved = true;
                 if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
                 challengeFeedback.textContent = '🎉 TEPAT! Fa = ' + currentFa.toFixed(1) + ' N (+100 Poin)!';
-            } else {
-                challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
-            }
+            } else challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru.';
         } else {
             challengeFeedback.className = 'challenge-feedback feedback-fail';
             challengeFeedback.textContent = '❌ Belum pas! Fa saat ini ' + currentFa.toFixed(1) + ' N (Target: ' + targetFa + ' N).';
