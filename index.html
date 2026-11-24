@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PhysLab 10 - Simulasi Laboratorium Fisika Virtual SMA Kelas 10</title>
+    <title>PhysLab 10 - Simulasi Laboratorium Fisika Virtual SMA Kelas 10</title>
     <meta name="description" content="Platform simulasi laboratorium fisika virtual interaktif dan gratis untuk siswa SMA kelas 10. Pelajari Gerak Parabola, Hukum Hooke, Bidang Miring, Ayunan Bandul, dan Kekekalan Energi Mekanik secara visual dan offline.">
-    <meta name="keywords" content="physlab 10, simulasi fisika, laboratorium fisika virtual, praktikum fisika online, fisika sma kelas 10, gerak parabola, hukum hooke, bidang miring dan gaya gesek, ayunan bandul sederhana, hukum kekekalan energi mekanik, phet bahasa indonesia, belajar fisika interaktif, media pembelajaran fisika">
+    <meta name="keywords" content="physlab 10, simulasi fisika, laboratorium fisika virtual, praktikum fisika online, fisika sma kelas 10, gerak parabola, hukum hooke, bidang miring dan gaya gesek, ayunan bandul sederhana, hukum kekekalan energi mekanik, belajar fisika interaktif">
     <meta name="author" content="Siswa SMA Kelas 10 - PhysLab 10">
-
-    <!-- Meta Tag Open Graph (Agar tampilan rapi saat link dibagikan di WhatsApp/Media Sosial) -->
-    <meta property="og:title" content="PhysLab 10 - Laboratorium Fisika Virtual SMA">
-    <meta property="og:description" content="Eksperimen fisika interaktif lengkap: Gerak Parabola, Pegas Hukum Hooke, Bidang Miring, Bandul, dan Energi Mekanik. Bisa digunakan offline!">
-    <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-
+    <meta name="theme-color" content="#2563eb">
 </head>
 <body>
 
@@ -34,16 +28,22 @@
                 <a href="bidang-miring.html">Bidang Miring</a>
                 <a href="bandul.html">Bandul</a>
                 <a href="energi.html">Energi</a>
-                
             </nav>
         </div>
     </header>
 
-    <!-- Bagian Utama (Hero & Daftar 5 Modul) -->
+    <!-- Bagian Utama (Hero dengan Gambar + Daftar 5 Modul) -->
     <main class="container">
         <section class="hero">
             <h2>Laboratorium Fisika Virtual SMA Kelas 10</h2>
             <p>Pelajari 5 konsep utama fisika secara visual dan interaktif. Ubah variabel percobaan sesukamu, amati simulasinya secara langsung, dan catat hasil perhitungannya—100% tanpa koneksi internet.</p>
+            
+            <!-- Gambar Ilustrasi Utama -->
+            <div style="margin-top: 1.5rem;">
+                <img src="https://i.pinimg.com/736x/ed/7a/50/ed7a50f18ec965ed6b5931ea543cf542.jpg" 
+                     alt="Ilustrasi Laboratorium Fisika PhysLab 10" 
+                     style="width: 100%; max-width: 680px; max-height: 300px; object-fit: cover; border-radius: 14px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); border: 2px solid var(--border-color);">
+            </div>
         </section>
 
         <!-- Daftar Kartu Modul Praktikum -->
@@ -149,17 +149,13 @@
         </div>
     </footer>
 
-    <!-- Script tombol ganti tema -->
     <script src="lab-tools.js"></script>
-<script>
-    // Daftarkan Service Worker agar website bisa di-install & berjalan offline
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('PhysLab 10 siap digunakan secara offline!'))
-            .catch((err) => console.log('Gagal mendaftarkan Service Worker:', err));
-    }
-</script>
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .catch(function(err) { console.log(err); });
+        }
+    </script>
 
 </body>
 </html>
