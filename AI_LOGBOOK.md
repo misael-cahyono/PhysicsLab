@@ -61,3 +61,16 @@ Melalui pengerjaan proyek **PhysLab 10**, tim kami memahami cara kerja arsitektu
 1. **Pemisahan Struktur, Gaya, dan Logika:** `HTML` berperan menyusun elemen antarmuka (*slider*, tombol, tabel, dan area `<canvas>`), `CSS` mengatur tata letak responsif dan efek *glassmorphism*, sedangkan `JavaScript` menghitung persamaan fisika dan menggambar ulang posisi benda setiap *frame* menggunakan `requestAnimationFrame()`.
 2. **Manajemen Data Lokal & Offline:** Kami memahami bagaimana `localStorage` menyimpan skor tantangan pengguna secara permanen di browser, serta bagaimana `manifest.json` dan `sw.js` (*Service Worker*) bekerja sama menyimpan aset web ke memori perangkat agar dapat di-*install* dan dijalankan tanpa koneksi internet.
 3. **Etika Penggunaan AI:** AI berperan sebagai mentor teknis dan alat bantu *debugging* yang mempercepat proses pembuatan kode, sementara seluruh pengujian rumus, perbaikan struktur file, desain aset visual, dan verifikasi akhir dilakukan langsung oleh tim kami.
+---
+
+## Tahap 5: Pengembangan Lanjutan (Ekspansi 9 Modul & Fitur Penjelasan Otomatis)
+*(Iteraksi lanjutan berdasarkan evaluasi tim untuk memperkaya materi listrik-magnet dan pemahaman konsep siswa)*
+
+* **Permasalahan & Evaluasi Tim:**  
+  Setelah menguji versi awal (6 modul), tim kami menyadari bahwa siswa tidak hanya membutuhkan angka hasil akhir, tetapi juga penjelasan langkah cara menghitungnya dan alasan fisika di balik hasil tersebut. Selain itu, materi Listrik Dinamis dan Kemagnetan perlu ditambahkan agar cakupan materi kelas 10 semakin lengkap.
+* **Prompt yang Digunakan:**  
+  > *"Tambahkan 3 modul baru yaitu Hukum Ohm & Rangkaian Listrik (Seri/Paralel), Elektromagnet, dan Induksi Faraday, serta buat kotak Analisis & Penjelasan Otomatis di bawah hasil hitungan pada seluruh 9 modul."*
+* **Validasi & Modifikasi Mandiri:**  
+  - Kami menguji logika rangkaian seri dan paralel pada modul Listrik, termasuk skenario *overload* (arus > 2,5 A) yang memutus filamen lampu.  
+  - Kami menguji perubahan kutub magnet (U-S) pada modul Elektromagnet serta simpangan jarum Galvanometer pada modul Induksi Faraday.  
+  - Kami memperbarui berkas `sw.js` ke versi `v5` dan menguji seluruh 9 halaman dalam mode *offline* serta memperbarui `README.md`.
