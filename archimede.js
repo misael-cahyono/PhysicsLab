@@ -252,7 +252,6 @@ if (btnNewMission) {
         challengeFeedback.style.display = 'none';
     });
 }
-
 if (btnCheckMission) {
     btnCheckMission.addEventListener('click', () => {
         if (targetFa === null) return;
@@ -264,12 +263,15 @@ if (btnCheckMission) {
                 if (typeof updateChallengeScore === 'function') updateChallengeScore(100);
                 challengeFeedback.textContent = '🎉 TEPAT! Gaya apung saat ini ' + currentFa.toFixed(1) + ' N sesuai target (+100 Poin)!';
             } else {
-    challengeFeedback.className = 'challenge-feedback feedback-fail';
-    challengeFeedback.textContent = '❌ Belum pas! Gaya apung saat ini ' + currentFa.toFixed(1) + ' N (Target: ' + targetFa + ' N).';
+                challengeFeedback.textContent = '✅ Misi selesai! Klik Buat Misi Baru untuk soal berikutnya.';
+            }
+        } else {
+            challengeFeedback.className = 'challenge-feedback feedback-fail';
+            challengeFeedback.textContent = '❌ Belum pas! Gaya apung saat ini ' + currentFa.toFixed(1) + ' N (Target: ' + targetFa + ' N).';
+        }
+    });
 }
-});
-}
-btnReset.addEventListener('click', () => {
+
 inputRhoObj.value = 600;
 presetMaterial.value = 'custom';
 inputVol.value = 0.05;
