@@ -1,33 +1,12 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulator Kekekalan Energi Mekanik - PhysLab 10</title>
+    <title>Lab Virtual Kekekalan Energi Mekanik - PhysLab 10</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .status-badge {
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-        .status-lolos {
-            background-color: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
-        }
-        .status-gagal {
-            background-color: #fefce8;
-            color: #ca8a04;
-            border: 1px solid #fef08a;
-        }
-    </style>
 </head>
 <body class="futuristic-home">
-
 
     <header class="navbar">
         <div class="container nav-content">
@@ -35,7 +14,7 @@
                 <span class="logo-icon">⚛️</span>
                 <h1>PhysLab <span>10</span></h1>
             </div>
-            <nav>
+            <nav style="flex-wrap: wrap;">
                 <a href="index.html">Beranda</a>
                 <a href="parabola.html">Parabola</a>
                 <a href="pegas.html">Pegas</a>
@@ -43,48 +22,51 @@
                 <a href="bandul.html">Bandul</a>
                 <a href="energi.html" class="active">Energi</a>
                 <a href="archimedes.html">Archimedes</a>
-                
+                <a href="listrik.html">Listrik</a>
+                <a href="elektromagnet.html">Elektromagnet</a>
+                <a href="faraday.html">Faraday</a>
             </nav>
         </div>
     </header>
 
     <main class="container">
         <div style="margin-bottom: 1.5rem;">
-            <h2>5. Simulator Hukum Kekekalan Energi Mekanik</h2>
-            <p style="color: var(--text-secondary);">Amati perubahan Energi Potensial (EP) menjadi Energi Kinetik (EK) saat kereta meluncur di lintasan roller coaster licin.</p>
+            <h2>5. Simulator Kekekalan Energi Mekanik (Roller Coaster)</h2>
+            <p style="color: #94a3b8;">Amati perubahan Energi Potensial (EP) menjadi Energi Kinetik (EK) saat kereta meluncur di lintasan bukit dan lembah.</p>
         </div>
 
         <div class="sim-layout">
             
             <aside class="control-panel">
-                <h3 style="margin-bottom: 1rem;">Variabel Lintasan</h3>
+                <h3 style="margin-bottom: 1rem;">Variabel Energi</h3>
 
                 <div class="control-group">
                     <label>
-                        <span>Tinggi Bukit Awal (h₁)</span>
-                        <span id="val-h1" style="color: var(--accent);">15.0 m</span>
+                        <span>Tinggi Awal Luncuran (h₀)</span>
+                        <span id="val-h0" style="color: #38bdf8;">10.0 m</span>
                     </label>
-                    <input type="range" id="input-h1" min="5" max="25" step="1" value="15">
-                </div>
-
-                <div class="control-group">
-                    <label>
-                        <span>Tinggi Bukit Kedua (h₂)</span>
-                        <span id="val-h2" style="color: var(--accent);">10.0 m</span>
-                    </label>
-                    <input type="range" id="input-h2" min="2" max="25" step="1" value="10">
+                    <input type="range" id="input-h0" min="4" max="15" step="0.5" value="10.0">
                 </div>
 
                 <div class="control-group">
                     <label>
                         <span>Massa Kereta (m)</span>
-                        <span id="val-m" style="color: var(--accent);">50 kg</span>
+                        <span id="val-m" style="color: #38bdf8;">5.0 kg</span>
                     </label>
-                    <input type="range" id="input-m" min="10" max="100" step="10" value="50">
+                    <input type="range" id="input-m" min="1" max="20" step="1" value="5">
+                </div>
+
+                <div class="control-group">
+                    <label for="input-g">Gravitasi Planet (g)</label>
+                    <select id="input-g">
+                        <option value="9.8" selected>Bumi (9,8 m/s²)</option>
+                        <option value="1.6">Bulan (1,6 m/s²)</option>
+                        <option value="3.7">Mars (3,7 m/s²)</option>
+                    </select>
                 </div>
 
                 <div class="btn-group">
-                    <button id="btn-play" class="btn-primary" style="flex: 2;">▶ Luncurkan Kereta</button>
+                    <button id="btn-toggle" class="btn-primary" style="flex: 2;">⏸ Jeda Kereta</button>
                     <button id="btn-reset" class="btn-secondary" style="flex: 1;">Reset</button>
                 </div>
 
@@ -93,24 +75,23 @@
                 </div>
 
                 <div id="formula-panel" class="formula-box" style="display: none; margin-top: 1rem; margin-bottom: 0;">
-                    <strong>Rumus Kekekalan Energi:</strong><br>
+                    <strong>Hukum Kekekalan Energi Mekanik:</strong><br>
                     • Energi Potensial: <code>EP = m · g · h</code><br>
                     • Energi Kinetik: <code>EK = ½ · m · v²</code><br>
-                    • Energi Mekanik: <code>EM = EP + EK</code><br>
-                    • Kecepatan Lembah: <code>v_max = √(2 · g · h₁)</code>
+                    • Energi Mekanik: <code>EM = EP + EK = Konstan</code><br>
+                    • Kecepatan: <code>v = √(2 · g · (h₀ - h))</code>
                 </div>
             </aside>
 
             <section class="visual-panel">
                 
-                <!-- KOTAK MISI TANTANGAN -->
                 <div class="challenge-box">
                     <div class="challenge-header">
-                        <h4>🎯 Misi Tantangan: Kecepatan Maksimum Lembah!</h4>
+                        <h4>🎯 Misi Tantangan: Target Kecepatan Lembah!</h4>
                         <span id="total-score" class="score-badge">0 Poin</span>
                     </div>
                     <p id="challenge-desc" class="challenge-text">
-                        Klik tombol "Buat Misi Baru" untuk mendapatkan target kecepatan kereta di dasar lembah!
+                        Klik tombol "Buat Misi Baru" untuk mendapatkan tantangan kecepatan maksimum kereta di dasar lembah!
                     </p>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button id="btn-new-mission" class="btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">🎲 Buat Misi Baru</button>
@@ -119,61 +100,64 @@
                     <div id="challenge-feedback" class="challenge-feedback"></div>
                 </div>
 
-                <div id="status-box" class="status-badge status-lolos">
-                    Prediksi: Kereta Mampu Melewati Bukit Kedua (h₁ ≥ h₂)
-                </div>
+                <canvas id="energy-canvas" width="650" height="360"></canvas>
 
-                <canvas id="energy-canvas" width="650" height="380"></canvas>
-
-                <!-- BARIS TOMBOL EKSPOR GAMBAR -->
                 <div class="export-bar">
                     <button class="btn-export" onclick="downloadCanvasImage('energy-canvas', 'laporan-kekekalan-energi')">
-                        📷 Simpan Gambar Lintasan (.PNG)
+                        📷 Simpan Gambar Lintasan Energi (.PNG)
                     </button>
                 </div>
 
                 <div class="output-grid">
                     <div class="output-item">
                         <span>Energi Potensial (EP)</span>
-                        <strong id="out-ep" style="color: #2563eb;">7350 J</strong>
+                        <strong id="out-ep" style="color: #38bdf8;">490.0 J</strong>
                     </div>
                     <div class="output-item">
                         <span>Energi Kinetik (EK)</span>
-                        <strong id="out-ek" style="color: #16a34a;">0 J</strong>
+                        <strong id="out-ek" style="color: #f87171;">0.0 J</strong>
                     </div>
                     <div class="output-item">
-                        <span>Total Energi Mekanik (EM)</span>
-                        <strong id="out-em" style="color: #ea580c;">7350 J</strong>
+                        <span>Energi Mekanik Total (EM)</span>
+                        <strong id="out-em" style="color: #4ade80;">490.0 J</strong>
                     </div>
                     <div class="output-item">
-                        <span>Kecepatan Kereta (v)</span>
-                        <strong id="out-v">0.00 m/s</strong>
+                        <span>Kecepatan Maks Lembah (v_max)</span>
+                        <strong id="out-vmax">14.00 m/s</strong>
+                    </div>
+                </div>
+
+                <!-- KOTAK ANALISIS & PENJELASAN OTOMATIS -->
+                <div class="explanation-box">
+                    <h4>💡 Analisis & Penjelasan Otomatis</h4>
+                    <div class="exp-section">
+                        <span class="exp-title">🧮 Langkah Cara Menghitung:</span>
+                        <p id="exp-calc" class="exp-text">Memuat langkah perhitungan...</p>
+                    </div>
+                    <div class="exp-section">
+                        <span class="exp-title">🔬 Mengapa Hasilnya Begini? (Analisis Konsep):</span>
+                        <p id="exp-reason" class="exp-text">Memuat penjelasan konsep fisika...</p>
                     </div>
                 </div>
             </section>
 
         </div>
 
-        <!-- PANEL PANDUAN LKS -->
         <section class="lks-panel">
             <h3>📖 Lembar Kerja Siswa (LKS) — Panduan Eksperimen Kekekalan Energi</h3>
             <p>Ikuti langkah-langkah di bawah ini dan centang kotak jika sudah selesai mengujinya:</p>
             <ul class="lks-list">
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 1 (Konversi EP ke EK):</strong> Atur <code>h₁ = 20 m</code> dan <code>h₂ = 10 m</code>. Luncurkan kereta dan perhatikan <strong>Grafik Energi Live</strong> di pojok kanan atas kanvas: saat kereta di dasar lembah (h = 0), seluruh EP berubah menjadi EK sementara batang EM tetap konstan!</span>
+                    <span><strong>Percobaan 1 (Kekekalan EM):</strong> Perhatikan grafik batang <strong>EP</strong>, <strong>EK</strong>, dan <strong>EM</strong> saat kereta naik-turun. Buktikan apakah tinggi batang <strong>EM</strong> selalu tetap konstan!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 2 (Bukit Kedua Lebih Tinggi):</strong> Atur <code>h₁ = 10 m</code> dan <code>h₂ = 18 m</code>, lalu luncurkan kereta. Amati apa yang terjadi saat kereta menanjak bukit kedua!</span>
+                    <span><strong>Percobaan 2 (Pengaruh Ketinggian Awal):</strong> Naikkan tinggi awal dari <code>5.0 m</code> menjadi <code>12.0 m</code>. Amati perubahan <strong>Kecepatan Maksimum di Lembah (v_max)</strong>!</span>
                 </li>
                 <li>
                     <input type="checkbox">
-                    <span><strong>Percobaan 3 (Pengaruh Massa pada Kecepatan):</strong> Ubah massa kereta dari <code>20 kg</code> menjadi <code>100 kg</code> pada ketinggian <code>h₁ = 15 m</code>. Amati apakah nilai <strong>Kecepatan Kereta (v)</strong> berubah atau tetap sama!</span>
-                </li>
-                <li>
-                    <input type="checkbox">
-                    <span><strong>Percobaan 4 (Uji Misi):</strong> Klik <strong>"Buat Misi Baru"</strong>, hitung ketinggian bukit awal (h₁) yang tepat agar kecepatan di dasar lembah sesuai target, lalu tekan <strong>"Cek Jawaban"</strong> (+100 Poin).</span>
+                    <span><strong>Percobaan 3 (Pengaruh Massa Kereta):</strong> Ubah massa kereta dari <code>2 kg</code> menjadi <code>15 kg</code> pada ketinggian tetap. Perhatikan apakah <strong>v_max</strong> berubah atau tetap sama!</span>
                 </li>
             </ul>
         </section>
@@ -181,7 +165,7 @@
 
     <footer>
         <div class="container">
-            <p>PhysLab 10 • Modul Hukum Kekekalan Energi Mekanik (Usaha & Energi)</p>
+            <p>PhysLab 10 • Modul Usaha & Kekekalan Energi Mekanik</p>
         </div>
     </footer>
 
